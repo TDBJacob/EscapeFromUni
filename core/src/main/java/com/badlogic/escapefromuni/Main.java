@@ -20,8 +20,10 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import org.w3c.dom.css.Rect;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main implements ApplicationListener {
@@ -45,6 +47,9 @@ public class Main implements ApplicationListener {
     float moneyWidth;
     float moneyHeight;
 
+    TiledMapTileLayer mapCollisionLayer;
+    ArrayList<Rectangle> mapCollisions;
+
     // Runs at start
     @Override
     public void create() {
@@ -63,6 +68,8 @@ public class Main implements ApplicationListener {
         moneyRectangle = new Rectangle();
         spriteBatch = new SpriteBatch();
 
+        mapCollisions = new ArrayList<Rectangle>();
+
         // store the bucket size for brevity
         moneyWidth = moneySprite.getWidth();
         moneyHeight = moneySprite.getHeight();
@@ -71,6 +78,33 @@ public class Main implements ApplicationListener {
 
         collisionObjectLayer = (TiledMapTileLayer)map.getLayers().get(objectLayerId);
         objects = collisionObjectLayer.getObjects();
+
+        TiledMapTileLayer mapCollisionLayer = (TiledMapTileLayer) map.getLayers().get(4);
+        // mapCollisions will be used to collide, update when switching map.
+        mapCollisions = createCollisionRects(mapCollisionLayer);
+    }
+
+    // Constructs an ArrayList of all collision rectangles for the layer provided
+    private ArrayList<Rectangle> createCollisionRects(TiledMapTileLayer layer) {
+        ArrayList<Rectangle> tempRectArray = new ArrayList<Rectangle>();
+
+        // Iterate over every tile, construct a rectangle around the tile, and add to arraylist
+        for (int x = 0; x < layer.getWidth(); x++) {
+            for (int y = 0; y < layer.getHeight(); y++) {
+                TiledMapTileLayer.Cell cell = layer.getCell(x, y); // Retrieve cell at our x and y
+
+                if (cell == null) // If nothing here, skip over it
+                    continue;
+
+                // Construct rectangle at this tile position
+                Rectangle tileRect = new Rectangle(x, y, 1, 1);
+
+                // Add this rectangle to our array
+                tempRectArray.add(tileRect);
+            }
+        }
+
+        return tempRectArray;
     }
 
     @Override
@@ -141,30 +175,18 @@ public class Main implements ApplicationListener {
 
     }
 
-    // NOTE FOR COLLISIONCHECK: thinking about it, we can probably construct an array of rectangles around tiles only once to save performance
-    // or something like that idk
-
     // Checks the collision layer against the parameter rectangle,
     // returns TRUE if there is a collision, FALSE otherwise.
     private boolean collisionCheck(Rectangle pRect) {
-        TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(4); // Refers to the collision layer in Tiled
 
-        // Iterate over every tile, construct a rectangle around the tile,
-        // and check if the rectangle overlaps the player's.
-        for (int x = 0; x < layer.getWidth(); x++) {
-            for (int y = 0; y < layer.getHeight(); y++) {
-                TiledMapTileLayer.Cell cell = layer.getCell(x, y); // Retrieve cell at our x and y
+        // Iterate over every tile in our already made collision map and check if it intersects pRect
+        // return TRUE if there is an overlap
+        for (Rectangle tileRect : mapCollisions) {
 
-                if (cell == null) // If nothing here, skip over it
-                    continue;
-
-                // Construct rectangle at this tile position
-                Rectangle tileRect = new Rectangle(x, y, 1, 1);
-
-                // Finally, if this rectangle overlaps our player's then return true.
+                // If this rectangle overlaps our player's then return true.
                 if (pRect.overlaps(tileRect)) {
                     return true;
-                }
+
             }
         }
         // No collision was detected, so we can return false.
