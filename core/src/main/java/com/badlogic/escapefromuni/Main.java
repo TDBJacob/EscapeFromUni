@@ -1,5 +1,8 @@
 package com.badlogic.escapefromuni;
 
+import com.badlogic.escapefromuni.levels.Level;
+import com.badlogic.escapefromuni.levels.Level0;
+import com.badlogic.escapefromuni.levels.Level1;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -24,11 +27,14 @@ import org.w3c.dom.css.Rect;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main implements ApplicationListener {
 
     final float root2 = 1.41f;
+
+    ArrayList<Level> levels;
 
     TiledMap map; // define map
     OrthogonalTiledMapRenderer mapRenderer; // define map renderer
@@ -39,7 +45,9 @@ public class Main implements ApplicationListener {
     Rectangle moneyRectangle;
     SpriteBatch spriteBatch;
 
-    int objectLayerId;
+    Level currentLevel;
+
+    float unitScale;
 
     TiledMapTileLayer collisionObjectLayer;
     MapObjects objects;
@@ -50,13 +58,36 @@ public class Main implements ApplicationListener {
     TiledMapTileLayer mapCollisionLayer;
     ArrayList<Rectangle> mapCollisions;
 
+    TiledMapTileLayer mapExitBackLayer;
+    ArrayList<Rectangle> mapExitBackCollisions;
+
+    TiledMapTileLayer mapExitForwardLayer;
+    ArrayList<Rectangle> mapExitForwardCollisions;
+
     // Runs at start
     @Override
     public void create() {
-        // Prepare your application here.
+
+        // IMPORTANT: This is the list of levels, the player can traverse back and forth in this order.
+        //            Add appropriate exits forward and/or backward in the tilemap on their individual layers.
+        levels = new ArrayList<Level>(Arrays.asList(new Level0(), new Level1()));
+
+        // This sets the next and previous level attributes of the room objects for ease of use
+        for (int i = 0; i < levels.size(); i++){
+            if (i-1>=0){
+                levels.get(i).setPrevLevel(levels.get(i-1));
+            }
+            if (i+1<levels.size()){
+                levels.get(i).setNextLevel(levels.get(i+1));
+            }
+        }
+
+        // The player always starts at the first level in the array.
+        currentLevel = levels.get(0);
+
         viewport = new FitViewport(40, 30);
         map = new TmxMapLoader().load("practice.tmx");
-        float unitScale = 1/ 16f;
+        unitScale = 1/ 16f;
         mapRenderer = new OrthogonalTiledMapRenderer(map, unitScale);
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 40, 30);
@@ -65,23 +96,53 @@ public class Main implements ApplicationListener {
         moneySprite = new Sprite(moneyTexture);
         moneySprite.setSize(1, 1);
         moneySprite.setX(20);
+        moneySprite.setY(1);
         moneyRectangle = new Rectangle();
         spriteBatch = new SpriteBatch();
 
         mapCollisions = new ArrayList<Rectangle>();
+        mapExitBackCollisions = new ArrayList<Rectangle>();
+        mapExitForwardCollisions = new ArrayList<Rectangle>();
 
         // store the bucket size for brevity
         moneyWidth = moneySprite.getWidth();
         moneyHeight = moneySprite.getHeight();
 
-        objectLayerId = 0;
+        moneyRectangle.setSize(1,1);
+        moneyRectangle.x = moneySprite.getX();
+        moneyRectangle.y = moneySprite.getY();
 
-        collisionObjectLayer = (TiledMapTileLayer)map.getLayers().get(objectLayerId);
-        objects = collisionObjectLayer.getObjects();
-
-        TiledMapTileLayer mapCollisionLayer = (TiledMapTileLayer) map.getLayers().get(4);
+        mapCollisionLayer = (TiledMapTileLayer) map.getLayers().get(4);
+        mapExitBackLayer = (TiledMapTileLayer) map.getLayers().get(5);
+        mapExitForwardLayer = (TiledMapTileLayer) map.getLayers().get(6);
         // mapCollisions will be used to collide, update when switching map.
         mapCollisions = createCollisionRects(mapCollisionLayer);
+        mapExitBackCollisions = createCollisionRects(mapExitBackLayer);
+        mapExitForwardCollisions = createCollisionRects(mapExitForwardLayer);
+    }
+
+    // Switches to a new map and moves the player appropriately when entering a new room.
+    public void switchToLevel(Level newLevel, boolean forward) {
+        // Prepare your application here.
+        currentLevel = newLevel;
+
+        map = new TmxMapLoader().load(newLevel.getMapName());
+        mapRenderer.setMap(map);
+        if (forward) {
+            moneySprite.setX(newLevel.getStartX());
+            moneySprite.setY(newLevel.getStartY());
+        } else {
+            moneySprite.setX(newLevel.getEndX());
+            moneySprite.setY(newLevel.getEndY());
+        }
+
+        mapCollisionLayer = (TiledMapTileLayer) map.getLayers().get(4);
+        mapExitBackLayer = (TiledMapTileLayer) map.getLayers().get(5);
+        mapExitForwardLayer = (TiledMapTileLayer) map.getLayers().get(6);
+        // mapCollisions will be used to collide, update when switching map.
+        mapCollisions = createCollisionRects(mapCollisionLayer);
+        mapExitBackCollisions = createCollisionRects(mapExitBackLayer);
+        mapExitForwardCollisions = createCollisionRects(mapExitForwardLayer);
     }
 
     // Constructs an ArrayList of all collision rectangles for the layer provided
@@ -127,7 +188,7 @@ public class Main implements ApplicationListener {
     }
 
     private void input() {
-        float speed = 4f; // Player's speed
+        float speed = 16f; // Player's speed
         float delta = Gdx.graphics.getDeltaTime(); // Change in time between frames
 
         // We will use these variables to allow for consistent speed on diagonal movement.
@@ -164,29 +225,55 @@ public class Main implements ApplicationListener {
         // as it doesn't make you flush against a wall if you move into it
 
         tRect.set(moneySprite.getX()+velX, moneySprite.getY(), moneyWidth, moneyHeight);
-        if (!collisionCheck(tRect)) {
+        if (!wallCollisionCheck(tRect)) {
             moneySprite.translateX(velX);
         }
 
         tRect.set(moneySprite.getX(), moneySprite.getY()+velY, moneyWidth, moneyHeight);
-        if (!collisionCheck(tRect)) {
+        if (!wallCollisionCheck(tRect)) {
             moneySprite.translateY(velY);
+        }
+
+        // Update the player's collision rectangle for the trigger collision check
+        moneyRectangle.x = moneySprite.getX();
+        moneyRectangle.y = moneySprite.getY();
+
+        // Check for collisions with non-walls and respond appropriately
+        triggerCollisionCheck(moneyRectangle);
+
+    }
+
+    // USE FOR NON-WALL COLLISIONS, I.E ITEMS OR ROOM TRANSITIONS
+    private void triggerCollisionCheck(Rectangle pRect) {
+
+        for (Rectangle tileRect : mapExitForwardCollisions) {
+            if (pRect.overlaps(tileRect)) {
+                Gdx.app.log("MyTag", currentLevel.getMapName());
+                switchToLevel(currentLevel.getNextLevel(),true);
+                break;
+            }
+        }
+
+        for (Rectangle tileRect : mapExitBackCollisions) {
+            if (pRect.overlaps(tileRect)) {
+                switchToLevel(currentLevel.getPrevLevel(),false);
+                break;
+            }
         }
 
     }
 
+    // USED FOR MOVEMENT BASED WALL COLLISIONS ONLY
     // Checks the collision layer against the parameter rectangle,
     // returns TRUE if there is a collision, FALSE otherwise.
-    private boolean collisionCheck(Rectangle pRect) {
+    private boolean wallCollisionCheck(Rectangle pRect) {
 
         // Iterate over every tile in our already made collision map and check if it intersects pRect
         // return TRUE if there is an overlap
         for (Rectangle tileRect : mapCollisions) {
-
-                // If this rectangle overlaps our player's then return true.
-                if (pRect.overlaps(tileRect)) {
-                    return true;
-
+            // If this rectangle overlaps our player's then return true.
+            if (pRect.overlaps(tileRect)) {
+                return true;
             }
         }
         // No collision was detected, so we can return false.
