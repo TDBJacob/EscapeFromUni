@@ -22,16 +22,17 @@ import java.util.ArrayList;
  */
 public class BusStop implements ApplicationListener {
 
-    // Game constants
-    private static final float WORLD_WIDTH = 40f;
-    private static final float WORLD_HEIGHT = 30f;
-    private static final float PLAYER_SPEED = 10f;
-    private static final float COIN_SIZE = 0.8f;
-    private static final float PLAYER_SIZE = 1f;
-    private static final float BUS_WIDTH = 3f;
-    private static final float BUS_HEIGHT = 2f;
-    private static final float GAME_TIME = 30f; // 30 seconds to collect all coins
-    private static final int TOTAL_COINS = 10;
+// Game constants
+private static final float WORLD_WIDTH = 400f;
+private static final float WORLD_HEIGHT = 300f;
+private static final float PLAYER_SPEED = 100f;  // player movement speed in world units per second
+private static final float PLAYER_SIZE = 32f;    // player sprite size at ~8% of world width
+private static final float COIN_SIZE = 24f;      // coin size smaller than player for clear visibility
+private static final float BUS_WIDTH = 48f;      // bus size visible but not dominant
+private static final float BUS_HEIGHT = 48f;
+private static final float GAME_TIME = 30f;      // 30 seconds to collect all coins
+private static final int TOTAL_COINS = 10;
+
 
     // Rendering
     private FitViewport viewport;
@@ -72,7 +73,7 @@ public class BusStop implements ApplicationListener {
         spriteBatch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
         font = new BitmapFont();
-        font.getData().setScale(1.5f);
+        font.getData().setScale(1.2f);
 
         // Load textures
         playerTexture = new Texture("Man.png");
@@ -259,11 +260,11 @@ public class BusStop implements ApplicationListener {
         // Draw timer
         font.setColor(Color.WHITE);
         String timeText = "Time: " + gameTimer.getSecondsRemaining() + "s";
-        font.draw(spriteBatch, timeText, 1, WORLD_HEIGHT - 1);
+        font.draw(spriteBatch, timeText, 8, WORLD_HEIGHT - 8);
 
         // Draw coin counter
         String coinText = "Coins: " + coinsCollected + "/" + TOTAL_COINS;
-        font.draw(spriteBatch, coinText, 1, WORLD_HEIGHT - 3);
+        font.draw(spriteBatch, coinText, 8, WORLD_HEIGHT - 32);
 
         // Draw instructions
         if (!busUnlocked) {
@@ -309,15 +310,15 @@ public class BusStop implements ApplicationListener {
 
         spriteBatch.begin();
         font.setColor(Color.GREEN);
-        font.getData().setScale(3f);
-        font.draw(spriteBatch, "LEVEL COMPLETE!", WORLD_WIDTH / 2 - 10, WORLD_HEIGHT / 2 + 3);
+        font.getData().setScale(1.5f);
+        font.draw(spriteBatch, "LEVEL COMPLETE!", WORLD_WIDTH / 2 - 80, WORLD_HEIGHT / 2 + 32);
         
-        font.getData().setScale(2f);
+        font.getData().setScale(0.7f);
         font.setColor(Color.WHITE);
         font.draw(spriteBatch, "You caught the bus!", WORLD_WIDTH / 2 - 7, WORLD_HEIGHT / 2);
         
         font.getData().setScale(1.5f);
-        font.draw(spriteBatch, "Press R to restart", WORLD_WIDTH / 2 - 6, WORLD_HEIGHT / 2 - 3);
+        font.draw(spriteBatch, "Press R to restart", WORLD_WIDTH / 2 - 60, WORLD_HEIGHT / 2 - 24);
         font.getData().setScale(1.5f);
         spriteBatch.end();
     }
@@ -329,19 +330,25 @@ public class BusStop implements ApplicationListener {
         shapeRenderer.end();
 
         spriteBatch.begin();
-        font.setColor(Color.RED);
-        font.getData().setScale(3f);
-        font.draw(spriteBatch, "LEVEL FAILED!", WORLD_WIDTH / 2 - 8, WORLD_HEIGHT / 2 + 3);
-        
-        font.getData().setScale(2f);
-        font.setColor(Color.WHITE);
-        font.draw(spriteBatch, "Time's up!", WORLD_WIDTH / 2 - 4, WORLD_HEIGHT / 2);
-        
-        font.getData().setScale(1.5f);
-        font.draw(spriteBatch, "Coins: " + coinsCollected + "/" + TOTAL_COINS, WORLD_WIDTH / 2 - 4, WORLD_HEIGHT / 2 - 2);
-        font.draw(spriteBatch, "Press R to restart", WORLD_WIDTH / 2 - 6, WORLD_HEIGHT / 2 - 4);
-        font.getData().setScale(1.5f);
-        spriteBatch.end();
+
+    // Title font size
+    font.setColor(Color.RED);
+    font.getData().setScale(1.2f);
+    font.draw(spriteBatch, "LEVEL FAILED!", WORLD_WIDTH / 2 - 72, WORLD_HEIGHT / 2 + 48);
+
+    // Subtitle font size
+    font.setColor(Color.WHITE);
+    font.getData().setScale(0.7f);
+    font.draw(spriteBatch, "Time's up!", WORLD_WIDTH / 2 - 36, WORLD_HEIGHT / 2 + 18);
+
+    font.draw(spriteBatch, "Coins: " + coinsCollected + "/" + TOTAL_COINS, WORLD_WIDTH / 2 - 48, WORLD_HEIGHT / 2 - 6);
+
+    // Restart instruction
+    font.setColor(Color.YELLOW);
+    font.getData().setScale(0.7f);
+    font.draw(spriteBatch, "Press R to restart", WORLD_WIDTH / 2 - 60, WORLD_HEIGHT / 2 - 36);
+
+    spriteBatch.end();
     }
 
     private void restart() {

@@ -2,6 +2,7 @@ package com.badlogic.escapefromuni.lwjgl3;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.escapefromuni.Main;
 import com.badlogic.escapefromuni.BusStop.BusStop;
 
 /** Launches the desktop (LWJGL3) application. */
