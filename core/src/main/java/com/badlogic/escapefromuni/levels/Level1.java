@@ -8,11 +8,11 @@ public class Level1 extends Level{
         startX = 19;
         startY = 4;
 
+        sideX = 1;
+        sideY = 15;
+
         endX = 32;
         endY = 25;
-
-        nextLevel = null;
-        prevLevel = null;
     }
 
 

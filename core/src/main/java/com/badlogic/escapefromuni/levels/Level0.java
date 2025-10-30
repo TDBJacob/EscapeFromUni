@@ -10,9 +10,6 @@ public class Level0 extends Level{
 
         endX = 31;
         endY = 25;
-
-        nextLevel = null;
-        prevLevel = null;
     }
 
 
