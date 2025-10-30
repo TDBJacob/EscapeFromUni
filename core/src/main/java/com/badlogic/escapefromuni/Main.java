@@ -21,22 +21,21 @@ public class Main implements ApplicationListener {
 
     @Override
     public void create() {
-        gameStarted = false;
+        //gameStarted = false;
 
-        batch = new SpriteBatch();
-        // use libGDX's default font
-        font = new BitmapFont();
-        viewport = new FitViewport(8, 5);
+        //batch = new SpriteBatch();
+        //font = new BitmapFont();
+        //viewport = new FitViewport(8, 5);
 
-        //font has 15pt, but we need to scale it to our viewport by ratio of viewport height to screen height
-        font.setUseIntegerPositions(false);
-        font.getData().setScale(viewport.getWorldHeight() / Gdx.graphics.getHeight());
+        //font.setUseIntegerPositions(false);
+        //font.getData().setScale(viewport.getWorldHeight() / Gdx.graphics.getHeight());
 
         //this.setScreen(new MainMenuScreen(this));
-
+        startGame();
     }
 
     public void startGame() {
+        gameStarted = true;
         game = new Game();
     }
 
