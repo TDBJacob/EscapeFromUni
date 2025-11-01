@@ -1,10 +1,6 @@
 package com.badlogic.escapefromuni;
 
-import com.badlogic.escapefromuni.levels.Level;
-import com.badlogic.escapefromuni.levels.Level0;
-import com.badlogic.escapefromuni.levels.Level1;
-import com.badlogic.escapefromuni.levels.Level2;
-import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.escapefromuni.levels.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -13,21 +9,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapLayers;
-import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import org.w3c.dom.css.Rect;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -73,7 +64,7 @@ public class Game {
 
         // IMPORTANT: This is the list of levels, the player can traverse back and forth in this order.
         //            Add appropriate exits forward and/or backward in the tilemap on their individual layers.
-        levels = new ArrayList<Level>(Arrays.asList(new Level0(), new Level1()));
+        levels = new ArrayList<Level>(Arrays.asList(new LibraryFloor3(), new LibraryFloor2(), new LibraryFloor1(), new LibraryFloor0()));
 
         // This sets the next and previous level attributes of the room objects for ease of use
         for (int i = 0; i < levels.size(); i++){
@@ -86,16 +77,16 @@ public class Game {
         }
 
         // Set up misc. side level stuff here
-        Level level2 = new Level2();
-        levels.get(1).setSideLevel(level2);
-        level2.setSideLevel(levels.get(1));
+        //Level level2 = new Level2();
+        //levels.get(1).setSideLevel(level2);
+        //level2.setSideLevel(levels.get(1));
 
 
         // The player always starts at the first level in the array.
         currentLevel = levels.get(0);
 
         viewport = new FitViewport(40, 30);
-        map = new TmxMapLoader().load("practice.tmx");
+        map = new TmxMapLoader().load("maps/libraryfloor3.tmx");
         unitScale = 1/ 16f;
         mapRenderer = new OrthogonalTiledMapRenderer(map, unitScale);
         camera = new OrthographicCamera();
@@ -104,8 +95,8 @@ public class Game {
         moneyTexture = new Texture("vecteezy_pack-of-dollars-money-clipart-design-illustration_9391394.png");
         moneySprite = new Sprite(moneyTexture);
         moneySprite.setSize(1, 1);
-        moneySprite.setX(20);
-        moneySprite.setY(1);
+        moneySprite.setX(40);
+        moneySprite.setY(27);
         moneyRectangle = new Rectangle();
         spriteBatch = new SpriteBatch();
 
