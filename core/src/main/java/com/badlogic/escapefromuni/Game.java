@@ -1,9 +1,6 @@
 package com.badlogic.escapefromuni;
 
-import com.badlogic.escapefromuni.levels.Level;
-import com.badlogic.escapefromuni.levels.Level0;
-import com.badlogic.escapefromuni.levels.Level1;
-import com.badlogic.escapefromuni.levels.Level2;
+import com.badlogic.escapefromuni.levels.*;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -86,16 +83,19 @@ public class Game {
         }
 
         // Set up misc. side level stuff here
-        Level level2 = new Level2();
-        levels.get(1).setSideLevel(level2);
-        level2.setSideLevel(levels.get(1));
+        // Jacob: Currently set up for ShopLevel instead of level 2
+        Level ShopLevel = new ShopLevel();
+        levels.get(1).setSideLevel(ShopLevel);
+        ShopLevel.setSideLevel(levels.get(1));
 
 
         // The player always starts at the first level in the array.
         currentLevel = levels.get(0);
 
         viewport = new FitViewport(40, 30);
-        map = new TmxMapLoader().load("practice.tmx");
+        //map = new TmxMapLoader().load("practice.tmx");
+        //try load shop map
+        map = new TmxMapLoader().load("ShopLevel.tmx");
         unitScale = 1/ 16f;
         mapRenderer = new OrthogonalTiledMapRenderer(map, unitScale);
         camera = new OrthographicCamera();
@@ -319,6 +319,16 @@ public class Game {
         float delta = Gdx.graphics.getDeltaTime();
         // apply the bucket position and size to the bucket rectangle
 
+    }
+
+    public void shopLogic(){
+        //
+    }
+    //called when player collides with "ShopBlock"
+    public void openShop(){
+        //draw shop
+
+        //
     }
 
     private void draw() {
