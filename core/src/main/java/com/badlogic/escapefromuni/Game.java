@@ -1,6 +1,7 @@
 package com.badlogic.escapefromuni;
 
 import com.badlogic.escapefromuni.levels.*;
+import com.badlogic.escapefromuni.Player;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -31,6 +32,8 @@ import java.util.Arrays;
 public class Game {
 
     final float root2 = 1.41f;
+
+    Player player = new Player(16f);//set default speed
 
     ArrayList<Level> levels;
 
@@ -208,25 +211,26 @@ public class Game {
     }
 
     private void input() {
-        float speed = 16f; // Player's speed
+        //float speed = 16f; // Player's speed
         float delta = Gdx.graphics.getDeltaTime(); // Change in time between frames
+        player.update(delta); //called to check for active powerups
 
         // We will use these variables to allow for consistent speed on diagonal movement.
         float velX = 0f;
         float velY = 0f;
 
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
-            velX = speed * delta; // Convert to speed/s for consistent gameplay on different FPS
+            velX = player.getSpeed() * delta; // Convert to speed/s for consistent gameplay on different FPS
         }
         else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
-            velX = -speed * delta;
+            velX = -player.getSpeed() * delta;
         }
         // Use if here rather than else if, so movement can happen on both axis at once
         if (Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) {
-            velY = speed * delta;
+            velY = player.getSpeed() * delta;
         }
         else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) {
-            velY = -speed * delta;
+            velY = -player.getSpeed() * delta;
         }
 
         // If the player moves diagonally, we need to divide their speed by root 2 to maintain the correct speed
@@ -260,6 +264,8 @@ public class Game {
 
         // Check for collisions with non-walls and respond appropriately
         triggerCollisionCheck(moneyRectangle);
+
+
 
     }
 
