@@ -75,26 +75,37 @@ public class Main implements ApplicationListener {
     @Override
     public void render() {
         if (gameStarted) {
+            if (!game.gameEnded) {
+                if(allowPauseButton && Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+                    //allowPauseButton = false;
+                    paused = !paused;
+                    ScreenUtils.clear(Color.CLEAR);
+                }
 
-            if(allowPauseButton && Gdx.input.isKeyJustPressed(Input.Keys.P)) {
-                //allowPauseButton = false;
-                paused = !paused;
-                ScreenUtils.clear(Color.CLEAR);
-            }
+                game.draw();
 
-            game.draw();
-
-            if (!paused) {
-                game.input();
-                game.logic();
+                if (!paused) {
+                    game.input();
+                    game.logic();
+                } else {
+                    drawPauseMenu();
+                }
             } else {
-                drawPauseMenu();
+                endGame(game.Score);
             }
-
         } else {
             drawMainMenu();
             inputMainMenu();
         }
+    }
+
+    public void endGame(int score) {
+        gameStarted = false;
+        paused = false;
+        allowPauseButton = false;
+        resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        game = null;
     }
 
     @Override

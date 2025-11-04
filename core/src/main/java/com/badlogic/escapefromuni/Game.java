@@ -33,6 +33,9 @@ import java.util.Arrays;
 
 public class Game {
 
+    public boolean gameEnded;
+    public int Score;
+
     final float root2 = 1.41f;
 
     float minimapTileSize = 1.4f;
@@ -79,6 +82,9 @@ public class Game {
 
     // Runs at start
     public Game() {
+
+        gameEnded = false;
+        Score = 0;
 
         // IMPORTANT: This is the list of levels, the player can traverse back and forth in this order.
         //            Add appropriate exits forward and/or backward in the tilemap on their individual layers.
