@@ -1,5 +1,6 @@
 package com.badlogic.escapefromuni;
 
+import com.badlogic.escapefromuni.ShopStuff.Item;
 import com.badlogic.escapefromuni.powerups.PowerUp;
 
 import java.util.ArrayList;
@@ -10,6 +11,39 @@ public class Player {
     private float speed;
     public final float defaultSpeed = 16f; //game start with this speed
     private List<PowerUp> activePowerUps = new ArrayList<>(); //this will be the list containing all the active powerups
+
+    private int coins;
+    private List<Item> inventory = new ArrayList<>();
+
+    //used for test only
+    public Player(int startingCoins) {
+        this.coins = startingCoins;
+    }
+
+    public int getCoins() {
+        return coins;
+    }
+    public void addCoins(int amount) {
+        coins += amount;
+    }
+
+    public boolean spendCoins(int amount) {
+        if (coins >= amount) {
+            coins -= amount;
+            return true;
+        }
+        return false;
+    }
+
+    public void addItem(Item item) {
+        inventory.add(item);
+    }
+
+    public List<Item> getInventory() {
+        return inventory;
+    }
+
+
     public Player(float speed){
         this.speed = speed;
     }

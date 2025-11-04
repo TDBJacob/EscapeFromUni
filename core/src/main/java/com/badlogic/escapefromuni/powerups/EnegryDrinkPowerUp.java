@@ -7,6 +7,12 @@ public class EnegryDrinkPowerUp implements PowerUp {
     private float duration; //seconds
     private float timeActive;
 
+    public EnegryDrinkPowerUp(float speedMult, float duration){
+        this.speedMult = speedMult;
+        this.duration = duration;
+        this.timeActive = 0.0f;
+    }
+
     //if changing speed then remember it is a multiplicative change rather then linear
     @Override
     public void apply(Player player) {

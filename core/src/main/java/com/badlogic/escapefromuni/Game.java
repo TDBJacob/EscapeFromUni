@@ -2,6 +2,8 @@ package com.badlogic.escapefromuni;
 
 import com.badlogic.escapefromuni.levels.*;
 import com.badlogic.escapefromuni.Player;
+import com.badlogic.escapefromuni.powerups.EnegryDrinkPowerUp;
+import com.badlogic.escapefromuni.powerups.PowerUp;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -13,6 +15,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -67,6 +70,10 @@ public class Game {
 
     TiledMapTileLayer mapExitSideLayer;
     ArrayList<Rectangle> mapExitSideCollisions;
+
+    //added for shop ui logic
+    TiledMapTileLayer mapShopLayer;
+    ArrayList<Rectangle> mapShopCollisions;
 
     // Runs at start
     public Game() {
@@ -156,12 +163,22 @@ public class Game {
 
         mapExitBackLayer = (TiledMapTileLayer) map.getLayers().get("ExitBack");
         mapExitForwardLayer = (TiledMapTileLayer) map.getLayers().get("ExitForward");
+        //check for ExitSide
         if (mapLayersToList(map.getLayers()).contains("ExitSide")) {
             mapExitSideLayer = (TiledMapTileLayer) map.getLayers().get("ExitSide");
             mapExitSideCollisions = createCollisionRects(mapExitSideLayer);
         } else {
             mapExitSideLayer = null;
             mapExitSideCollisions = new ArrayList<Rectangle>();
+        }
+
+        //same logic for shopblock layer
+        if (mapLayersToList(map.getLayers()).contains("ShopBlock")) {
+            mapShopLayer = (TiledMapTileLayer) map.getLayers().get("ShopBlock");
+            mapShopCollisions = createCollisionRects(mapShopLayer);
+        } else {
+            mapShopLayer = null;
+            mapShopCollisions = new ArrayList<Rectangle>();
         }
 
         // mapCollisions will be used to collide, update when switching map.
@@ -218,6 +235,14 @@ public class Game {
         // We will use these variables to allow for consistent speed on diagonal movement.
         float velX = 0f;
         float velY = 0f;
+
+        //experiment of power up
+        //a key press (P) will be used to give the power up instead of a gui button for now
+        //higher than 1.5 X speed crashes the collision logic and breaks the game
+        if (Gdx.input.isKeyPressed((Input.Keys.P)) ){
+            PowerUp drinkPowerUp = new EnegryDrinkPowerUp(1.1f, 5.0f);
+            player.addPowerUp(drinkPowerUp);
+        }
 
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
             velX = player.getSpeed() * delta; // Convert to speed/s for consistent gameplay on different FPS
@@ -289,6 +314,13 @@ public class Game {
         for (Rectangle tileRect : mapExitBackCollisions) {
             if (pRect.overlaps(tileRect)) {
                 switchToLevel(currentLevel.getPrevLevel(),"Back");
+                break;
+            }
+        }
+
+        for (Rectangle tileRect : mapShopCollisions) {
+            if (pRect.overlaps((tileRect))) {
+                //open shop UI
                 break;
             }
         }
