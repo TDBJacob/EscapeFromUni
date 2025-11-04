@@ -1,5 +1,7 @@
 package com.badlogic.escapefromuni.levels;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
+
 public abstract class Level {
 
     protected int startX = -1;
@@ -17,6 +19,8 @@ public abstract class Level {
     protected Level nextLevel = null;
     protected Level sideLevel = null;
     protected Level prevLevel = null;
+
+    protected Sprite minimapIcon;
 
     public String getMapName() {
         return mapName;
@@ -62,5 +66,12 @@ public abstract class Level {
     }
     public void setPrevLevel(Level prevLevel) {
         this.prevLevel = prevLevel;
+    }
+
+    public Sprite getMinimapSprite() {
+        return minimapIcon;
+    }
+    public void setMinimapSprite(Sprite newSprite) {
+        this.minimapIcon = newSprite;
     }
 }

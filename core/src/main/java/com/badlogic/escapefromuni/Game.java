@@ -35,6 +35,8 @@ public class Game {
 
     final float root2 = 1.41f;
 
+    float minimapTileSize = 1.4f;
+
     ArrayList<Level> levels;
 
     TiledMap map; // define map
@@ -68,6 +70,13 @@ public class Game {
     TiledMapTileLayer mapExitSideLayer;
     ArrayList<Rectangle> mapExitSideCollisions;
 
+    Texture emptyMinimapIcon;
+    Texture playerMinimapIcon;
+
+    Level level2;
+
+    ArrayList<Sprite> minimapSprites;
+
     // Runs at start
     public Game() {
 
@@ -75,8 +84,14 @@ public class Game {
         //            Add appropriate exits forward and/or backward in the tilemap on their individual layers.
         levels = new ArrayList<Level>(Arrays.asList(new Level0(), new Level1()));
 
+        emptyMinimapIcon = new Texture("emptyminimap.png");
+        playerMinimapIcon = new Texture("occupiedminimap.png");
+
         // This sets the next and previous level attributes of the room objects for ease of use
         for (int i = 0; i < levels.size(); i++){
+            levels.get(i).setMinimapSprite(new Sprite(emptyMinimapIcon));
+            levels.get(i).getMinimapSprite().setX(38f);
+            levels.get(i).getMinimapSprite().setSize(minimapTileSize-0.1f,minimapTileSize-0.1f);
             if (i-1>=0){
                 levels.get(i).setPrevLevel(levels.get(i-1));
             }
@@ -86,7 +101,10 @@ public class Game {
         }
 
         // Set up misc. side level stuff here
-        Level level2 = new Level2();
+        level2 = new Level2();
+        level2.setMinimapSprite(new Sprite(emptyMinimapIcon));
+        level2.getMinimapSprite().setX(38f-minimapTileSize);
+        level2.getMinimapSprite().setSize(minimapTileSize-0.1f,minimapTileSize-0.1f);
         levels.get(1).setSideLevel(level2);
         level2.setSideLevel(levels.get(1));
 
@@ -134,17 +152,24 @@ public class Game {
         // Prepare your application here.
         currentLevel = newLevel;
 
+        newLevel.getMinimapSprite().setTexture(playerMinimapIcon);
+
         map = new TmxMapLoader().load(newLevel.getMapName());
         mapRenderer.setMap(map);
         if (enterDirection == "Forward") {
             moneySprite.setX(newLevel.getStartX());
             moneySprite.setY(newLevel.getStartY());
+            if (newLevel.getPrevLevel() != null) {
+                newLevel.getPrevLevel().getMinimapSprite().setTexture(emptyMinimapIcon);
+            }
         } else if (enterDirection == "Side") {
             moneySprite.setX(newLevel.getSideX());
             moneySprite.setY(newLevel.getSideY());
+            newLevel.getSideLevel().getMinimapSprite().setTexture(emptyMinimapIcon);
         } else if (enterDirection == "Back") {
             moneySprite.setX(newLevel.getEndX());
             moneySprite.setY(newLevel.getEndY());
+            newLevel.getNextLevel().getMinimapSprite().setTexture(emptyMinimapIcon);
         }
 
         mapCollisionLayer = (TiledMapTileLayer) map.getLayers().get("Collision");
@@ -200,14 +225,12 @@ public class Game {
     }
 
     // Runs every frame
-    public void render() {
+    //public void render() {
         // Draw your application here.
-        input();
-        logic();
-        draw();
-    }
 
-    private void input() {
+   // }
+
+    public void input() {
         float speed = 16f; // Player's speed
         float delta = Gdx.graphics.getDeltaTime(); // Change in time between frames
 
@@ -306,7 +329,7 @@ public class Game {
         return false;
     }
 
-    private void logic() {
+    public void logic() {
         // store the worldWidth and worldHeight as local variables for brevity
         float worldWidth = viewport.getWorldWidth();
         float worldHeight = viewport.getWorldHeight();
@@ -321,7 +344,7 @@ public class Game {
 
     }
 
-    private void draw() {
+    public void draw() {
         ScreenUtils.clear(Color.BLACK);
         viewport.apply();
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
@@ -342,7 +365,21 @@ public class Game {
         //dropSprite.draw(spriteBatch);
         //}
 
+        drawMinimap();
+
         spriteBatch.end();
+    }
+
+    private void drawMinimap() {
+        for (int i = 0; i < levels.size(); i++){
+            float h = +24+i*minimapTileSize;
+            levels.get(i).getMinimapSprite().setY(h);
+            if (levels.get(i).getSideLevel() != null) {
+                levels.get(i).getSideLevel().getMinimapSprite().setY(h);
+                levels.get(i).getSideLevel().getMinimapSprite().draw(spriteBatch);
+            }
+            levels.get(i).getMinimapSprite().draw(spriteBatch);
+        }
     }
 
     public void pause() {
