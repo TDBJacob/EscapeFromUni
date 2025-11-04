@@ -84,7 +84,7 @@ public class Game {
     // Runs at start
     public Game() {
 
-        WinOrLose = "Return";
+        WinOrLose = "Return"; // Should be "Return"
         gameEnded = false;
         Score = 0;
 
