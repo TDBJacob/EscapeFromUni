@@ -31,12 +31,22 @@ public class Main implements ApplicationListener {
     Sprite playButtonSprite;
     Texture playButtonTexture;
 
+    Sprite returnToMenuButtonSprite;
+    Texture returnToMenuButtonTexture;
+
+    Sprite resumeButtonSprite;
+    Texture resumeButtonTexture;
+
     Texture menuText;
     Texture pausedText;
+
+    boolean buttonCD;
 
     @Override
     public void create() {
         gameStarted = false;
+
+        buttonCD = false;
 
         batch = new SpriteBatch();
         viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -49,6 +59,16 @@ public class Main implements ApplicationListener {
         playButtonSprite = new Sprite(playButtonTexture);
         playButtonSprite.setSize(1280/3, 200);
         playButtonSprite.setPosition(1280/3,100);
+
+        returnToMenuButtonTexture = new Texture("returntext.png");
+        returnToMenuButtonSprite = new Sprite(returnToMenuButtonTexture);
+        returnToMenuButtonSprite.setSize(1280/3, 200);
+        returnToMenuButtonSprite.setPosition(1280/3,80);
+
+        resumeButtonTexture = new Texture("resumetext.png");
+        resumeButtonSprite = new Sprite(resumeButtonTexture);
+        resumeButtonSprite.setSize(1280/3, 200);
+        resumeButtonSprite.setPosition(1280/3,330);
 
         //startGame();
     }
@@ -74,6 +94,11 @@ public class Main implements ApplicationListener {
     // Runs every frame
     @Override
     public void render() {
+
+        if (!Gdx.input.isTouched()) {
+            buttonCD = false;
+        }
+
         if (gameStarted) {
             if (!game.gameEnded) {
                 if(allowPauseButton && Gdx.input.isKeyJustPressed(Input.Keys.P)) {
@@ -89,9 +114,10 @@ public class Main implements ApplicationListener {
                     game.logic();
                 } else {
                     drawPauseMenu();
+                    inputPauseMenu();
                 }
             } else {
-                endGame(game.Score);
+                endGame(game.Score, game.WinOrLose);
             }
         } else {
             drawMainMenu();
@@ -99,7 +125,7 @@ public class Main implements ApplicationListener {
         }
     }
 
-    public void endGame(int score) {
+    public void endGame(int score, String winOrLose) {
         gameStarted = false;
         paused = false;
         allowPauseButton = false;
@@ -137,8 +163,9 @@ public class Main implements ApplicationListener {
             //Gdx.app.log("MyTag", mouseX + " " + mouseY);
             //Gdx.app.log("buttonxy", playButtonSprite.getBoundingRectangle().x+" "+playButtonSprite.getBoundingRectangle().y);
 
-            if (playButtonSprite.getBoundingRectangle().contains(new Vector2(mouseX,mouseY))) {
+            if (!buttonCD && playButtonSprite.getBoundingRectangle().contains(new Vector2(mouseX,mouseY))) {
                 startGame();
+                buttonCD = true;
             }
         }
     }
@@ -163,9 +190,34 @@ public class Main implements ApplicationListener {
         batch.setProjectionMatrix(viewport.getCamera().combined);
         batch.begin();
 
-        batch.draw(pausedText,240,350, 800, 300);
+        batch.draw(pausedText,240,660, 800, 200);
+
+        returnToMenuButtonSprite.draw(batch);
+        resumeButtonSprite.draw(batch);
 
         batch.end();
+    }
+
+    private void inputPauseMenu() {
+        if (Gdx.input.isTouched()) {
+            float mouseX = Gdx.input.getX();
+            float mouseY = viewport.getScreenHeight()-Gdx.input.getY();
+
+
+            //Gdx.app.log("MyTag", mouseX + " " + mouseY);
+            //Gdx.app.log("buttonxy", playButtonSprite.getBoundingRectangle().x+" "+playButtonSprite.getBoundingRectangle().y);
+
+            if (!buttonCD) {
+                if (resumeButtonSprite.getBoundingRectangle().contains(new Vector2(mouseX, mouseY))) {
+                    paused = false;
+                    ScreenUtils.clear(Color.CLEAR);
+                    game.draw();
+                } else if (returnToMenuButtonSprite.getBoundingRectangle().contains(new Vector2(mouseX, mouseY))) {
+                    endGame(game.Score, game.WinOrLose);
+                    buttonCD = true;
+                }
+            }
+        }
     }
 
 }

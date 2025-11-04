@@ -35,6 +35,7 @@ public class Game {
 
     public boolean gameEnded;
     public int Score;
+    public String WinOrLose;
 
     final float root2 = 1.41f;
 
@@ -83,6 +84,7 @@ public class Game {
     // Runs at start
     public Game() {
 
+        WinOrLose = "Return";
         gameEnded = false;
         Score = 0;
 
