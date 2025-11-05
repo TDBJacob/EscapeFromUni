@@ -13,24 +13,20 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapLayers;
-import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import org.w3c.dom.css.Rect;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.awt.*;
 
 public class Game {
 
@@ -98,7 +94,7 @@ public class Game {
 
         // IMPORTANT: This is the list of levels, the player can traverse back and forth in this order.
         //            Add appropriate exits forward and/or backward in the tilemap on their individual layers.
-        levels = new ArrayList<Level>(Arrays.asList(new Level0(), new Level1()));
+        levels = new ArrayList<Level>(Arrays.asList(new LibraryFloor3(), new LibraryFloor2(), new LibraryFloor1(), new LibraryFloor0()));
 
         emptyMinimapIcon = new Texture("emptyminimap.png");
         playerMinimapIcon = new Texture("occupiedminimap.png");
@@ -134,9 +130,8 @@ public class Game {
         currentLevel = levels.get(0);
 
         viewport = new FitViewport(40, 30);
-        //map = new TmxMapLoader().load("practice.tmx");
-        //try load shop map
-        map = new TmxMapLoader().load("ShopLevel.tmx");
+        // Change made here, starting level is floor 3 of the library (a tmx).
+        map = new TmxMapLoader().load("maps/libraryfloor3.tmx");
         unitScale = 1/ 16f;
         mapRenderer = new OrthogonalTiledMapRenderer(map, unitScale);
         camera = new OrthographicCamera();
@@ -145,8 +140,8 @@ public class Game {
         moneyTexture = new Texture("vecteezy_pack-of-dollars-money-clipart-design-illustration_9391394.png");
         moneySprite = new Sprite(moneyTexture);
         moneySprite.setSize(1, 1);
-        moneySprite.setX(20);
-        moneySprite.setY(1);
+        moneySprite.setX(40);
+        moneySprite.setY(27);
         moneyRectangle = new Rectangle();
         spriteBatch = new SpriteBatch();
 
@@ -386,7 +381,19 @@ public class Game {
         // clamp y vals
         moneySprite.setY(MathUtils.clamp(moneySprite.getY(), 0, worldHeight - moneyHeight));
 
+        // Player rectangle constructed for collision logic in levels.
+        Rectangle playerRectangle = new Rectangle(moneySprite.getX(), moneySprite.getY(), 1, 1);
+
         float delta = Gdx.graphics.getDeltaTime();
+        // Updates the level entities.
+        this.currentLevel.update(delta);
+        // Collision logic for active level.
+        if (this.currentLevel.collides(new Rectangle(moneySprite.getX(), moneySprite.getY(), 1, 1))) {
+            // Some logic here to add time to the clock, as player has collided with an enemy.
+            // Could be abstracted to another method in this class.
+            // Showing it works.
+            System.out.println("Player collided with entity.");
+        }
         // apply the bucket position and size to the bucket rectangle
 
     }
@@ -417,6 +424,10 @@ public class Game {
 
         //spriteBatch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight); // draw the background
         //spriteBatch.draw(knightTexture, 0, 0, 1, 1); // draw the bucket -- made obsolete by use of Sprite
+
+        // Draws the level entities.
+        this.currentLevel.draw(spriteBatch);
+
         moneySprite.draw(spriteBatch); // Sprites have their own draw method
 
         // draw each Sprite

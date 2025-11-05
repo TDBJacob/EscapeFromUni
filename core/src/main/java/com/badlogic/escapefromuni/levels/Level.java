@@ -2,6 +2,10 @@ package com.badlogic.escapefromuni.levels;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
+import java.awt.*;
+
 public abstract class Level {
 
     protected int startX = -1;
@@ -25,6 +29,19 @@ public abstract class Level {
     public String getMapName() {
         return mapName;
     }
+
+    // To be invoked in Game, in the logic method.
+    // This will update the entities on the level.
+    public abstract void update(float deltaTime);
+
+    // To be invoked in Game, in the draw method.
+    // This will re-draw the entities on the level in their updated positions.
+    public abstract void draw(SpriteBatch batch);
+
+    // To be invoked in Game, in the logic method.
+    // This will check collision logic between player and entities on the level.
+    // Can have general use, i.e. can be expanded to collectibles.
+    public abstract boolean collides(com.badlogic.gdx.math.Rectangle rectangle);
 
     public int getStartX() {
         return startX;
