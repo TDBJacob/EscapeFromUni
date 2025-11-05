@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="40" height="30" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="4">
+  <properties>
+    <property name="notes" value="Blank background via zero tiles; Entities layer defines spawn and bus trigger."/>
+  </properties>
+  <layer id="1" name="Background" width="10" height="8">
+    <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0
+    </data>
+  </layer>
+  <layer id="2" name="Decor" width="10" height="8">
+    <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0
+    </data>
+  </layer>
+  <objectgroup id="3" name="Entities">
+    <object id="1" name="PlayerSpawn" type="spawn" x="64" y="64">
+      <point/>
+    </object>
+    <object id="2" name="Bus" type="bus" x="256" y="160" width="64" height="32">
+      <properties>
+        <property name="isBus" type="bool" value="true"/>
+      </properties>
+    </object>
+    <object id="3" name="BusStop" type="bus_stop" x="256" y="160">
+      <properties>
+        <property name="arrivalIntervalMs" type="int" value="285000"/>
+        <property name="boardingWindowMs" type="int" value="10000"/>
+        <property name="fareCoins" type="int" value="1"/>
+      </properties>
+      <point/>
+    </object>
+  </objectgroup>
+  <objectgroup id="4" name="Collision" visible="0">
+  </objectgroup>
+</map>
+
