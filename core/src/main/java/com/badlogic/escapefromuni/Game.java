@@ -167,6 +167,11 @@ public class Game {
 
     // Switches to a new map and moves the player appropriately when entering a new room.
     public void switchToLevel(Level newLevel, String enterDirection) {
+        // Check if newLevel is null to prevent NullPointerException
+        if (newLevel == null) {
+            return;
+        }
+        
         // Prepare your application here.
         currentLevel = newLevel;
 
@@ -183,14 +188,26 @@ public class Game {
         } else if (enterDirection == "Side") {
             moneySprite.setX(newLevel.getSideX());
             moneySprite.setY(newLevel.getSideY());
-            newLevel.getSideLevel().getMinimapSprite().setTexture(emptyMinimapIcon);
+            if (newLevel.getSideLevel() != null) {
+                newLevel.getSideLevel().getMinimapSprite().setTexture(emptyMinimapIcon);
+            }
         } else if (enterDirection == "Back") {
             moneySprite.setX(newLevel.getEndX());
             moneySprite.setY(newLevel.getEndY());
-            newLevel.getNextLevel().getMinimapSprite().setTexture(emptyMinimapIcon);
+            if (newLevel.getNextLevel() != null) {
+                newLevel.getNextLevel().getMinimapSprite().setTexture(emptyMinimapIcon);
+            }
         }
 
-        mapCollisionLayer = (TiledMapTileLayer) map.getLayers().get("Collision");
+        // Handle both "Collision" and "collision" layer names
+        if (mapLayersToList(map.getLayers()).contains("Collision")) {
+            mapCollisionLayer = (TiledMapTileLayer) map.getLayers().get("Collision");
+        } else if (mapLayersToList(map.getLayers()).contains("collision")) {
+            mapCollisionLayer = (TiledMapTileLayer) map.getLayers().get("collision");
+        } else {
+            // Default to first layer if collision layer not found
+            mapCollisionLayer = (TiledMapTileLayer) map.getLayers().get(0);
+        }
 
         viewport.setWorldSize(mapCollisionLayer.getWidth(),mapCollisionLayer.getHeight());
 
@@ -324,21 +341,27 @@ public class Game {
 
         for (Rectangle tileRect : mapExitForwardCollisions) {
             if (pRect.overlaps(tileRect)) {
-                switchToLevel(currentLevel.getNextLevel(),"Forward");
+                if (currentLevel.getNextLevel() != null) {
+                    switchToLevel(currentLevel.getNextLevel(),"Forward");
+                }
                 break;
             }
         }
 
         for (Rectangle tileRect : mapExitSideCollisions) {
             if (pRect.overlaps(tileRect)) {
-                switchToLevel(currentLevel.getSideLevel(),"Side");
+                if (currentLevel.getSideLevel() != null) {
+                    switchToLevel(currentLevel.getSideLevel(),"Side");
+                }
                 break;
             }
         }
 
         for (Rectangle tileRect : mapExitBackCollisions) {
             if (pRect.overlaps(tileRect)) {
-                switchToLevel(currentLevel.getPrevLevel(),"Back");
+                if (currentLevel.getPrevLevel() != null) {
+                    switchToLevel(currentLevel.getPrevLevel(),"Back");
+                }
                 break;
             }
         }
