@@ -1,9 +1,9 @@
 package com.badlogic.escapefromuni;
 
-import com.badlogic.escapefromuni.levels.Level;
-import com.badlogic.escapefromuni.levels.Level0;
-import com.badlogic.escapefromuni.levels.Level1;
-import com.badlogic.escapefromuni.levels.Level2;
+import com.badlogic.escapefromuni.levels.*;
+import com.badlogic.escapefromuni.Player;
+import com.badlogic.escapefromuni.powerups.EnegryDrinkPowerUp;
+import com.badlogic.escapefromuni.powerups.PowerUp;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -40,6 +41,8 @@ public class Game {
     final float root2 = 1.41f;
 
     float minimapTileSize = 1.4f;
+
+    Player player = new Player(16f);//set default speed
 
     ArrayList<Level> levels;
 
@@ -74,10 +77,15 @@ public class Game {
     TiledMapTileLayer mapExitSideLayer;
     ArrayList<Rectangle> mapExitSideCollisions;
 
+    //added for shop ui logic
+    TiledMapTileLayer mapShopLayer;
+    ArrayList<Rectangle> mapShopCollisions;
+
     Texture emptyMinimapIcon;
     Texture playerMinimapIcon;
 
-    Level level2;
+    //used by will for side level
+    //Level level2;
 
     ArrayList<Sprite> minimapSprites;
 
@@ -109,19 +117,26 @@ public class Game {
         }
 
         // Set up misc. side level stuff here
-        level2 = new Level2();
-        level2.setMinimapSprite(new Sprite(emptyMinimapIcon));
-        level2.getMinimapSprite().setX(38f-minimapTileSize);
-        level2.getMinimapSprite().setSize(minimapTileSize-0.1f,minimapTileSize-0.1f);
-        levels.get(1).setSideLevel(level2);
-        level2.setSideLevel(levels.get(1));
+
+        // Jacob: Currently set up for ShopLevel instead of level 2
+        Level ShopLevel = new ShopLevel();
+        levels.get(1).setSideLevel(ShopLevel);
+        ShopLevel.setSideLevel(levels.get(1));
+
+        ShopLevel.setMinimapSprite(new Sprite(emptyMinimapIcon));
+        ShopLevel.getMinimapSprite().setX(38f-minimapTileSize);
+        ShopLevel.getMinimapSprite().setSize(minimapTileSize-0.1f,minimapTileSize-0.1f);
+
+
 
 
         // The player always starts at the first level in the array.
         currentLevel = levels.get(0);
 
         viewport = new FitViewport(40, 30);
-        map = new TmxMapLoader().load("practice.tmx");
+        //map = new TmxMapLoader().load("practice.tmx");
+        //try load shop map
+        map = new TmxMapLoader().load("ShopLevel.tmx");
         unitScale = 1/ 16f;
         mapRenderer = new OrthogonalTiledMapRenderer(map, unitScale);
         camera = new OrthographicCamera();
@@ -186,12 +201,22 @@ public class Game {
 
         mapExitBackLayer = (TiledMapTileLayer) map.getLayers().get("ExitBack");
         mapExitForwardLayer = (TiledMapTileLayer) map.getLayers().get("ExitForward");
+        //check for ExitSide
         if (mapLayersToList(map.getLayers()).contains("ExitSide")) {
             mapExitSideLayer = (TiledMapTileLayer) map.getLayers().get("ExitSide");
             mapExitSideCollisions = createCollisionRects(mapExitSideLayer);
         } else {
             mapExitSideLayer = null;
             mapExitSideCollisions = new ArrayList<Rectangle>();
+        }
+
+        //same logic for shopblock layer
+        if (mapLayersToList(map.getLayers()).contains("ShopBlock")) {
+            mapShopLayer = (TiledMapTileLayer) map.getLayers().get("ShopBlock");
+            mapShopCollisions = createCollisionRects(mapShopLayer);
+        } else {
+            mapShopLayer = null;
+            mapShopCollisions = new ArrayList<Rectangle>();
         }
 
         // mapCollisions will be used to collide, update when switching map.
@@ -232,32 +257,37 @@ public class Game {
         // Resize your application here. The parameters represent the new window size.
     }
 
-    // Runs every frame
-    //public void render() {
-        // Draw your application here.
-
-   // }
+    //render is called in main
 
     public void input() {
-        float speed = 16f; // Player's speed
+        //float speed = 16f; // Player's speed
         float delta = Gdx.graphics.getDeltaTime(); // Change in time between frames
+        player.update(delta); //called to check for active powerups
 
         // We will use these variables to allow for consistent speed on diagonal movement.
         float velX = 0f;
         float velY = 0f;
 
+        //experiment of power up
+        //a key press (P) will be used to give the power up instead of a gui button for now
+        //higher than 1.5 X speed crashes the collision logic and breaks the game
+        if (Gdx.input.isKeyPressed((Input.Keys.P)) ){
+            PowerUp drinkPowerUp = new EnegryDrinkPowerUp(1.1f, 5.0f);
+            player.addPowerUp(drinkPowerUp);
+        }
+
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
-            velX = speed * delta; // Convert to speed/s for consistent gameplay on different FPS
+            velX = player.getSpeed() * delta; // Convert to speed/s for consistent gameplay on different FPS
         }
         else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
-            velX = -speed * delta;
+            velX = -player.getSpeed() * delta;
         }
         // Use if here rather than else if, so movement can happen on both axis at once
         if (Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) {
-            velY = speed * delta;
+            velY = player.getSpeed() * delta;
         }
         else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) {
-            velY = -speed * delta;
+            velY = -player.getSpeed() * delta;
         }
 
         // If the player moves diagonally, we need to divide their speed by root 2 to maintain the correct speed
@@ -318,6 +348,15 @@ public class Game {
             }
         }
 
+        //added for Shop Ui to be detected when the player collides
+        //with the player
+        for (Rectangle tileRect : mapShopCollisions) {
+            if (pRect.overlaps((tileRect))) {
+                //open shop UI
+                break;
+            }
+        }
+
     }
 
     // USED FOR MOVEMENT BASED WALL COLLISIONS ONLY
@@ -351,6 +390,18 @@ public class Game {
         // apply the bucket position and size to the bucket rectangle
 
     }
+
+
+    public void shopLogic(){
+        //
+    }
+    //called when player collides with "ShopBlock"
+    public void openShop(){
+        //draw shop
+
+        //
+    }
+
 
     public void draw() {
         ScreenUtils.clear(Color.BLACK);

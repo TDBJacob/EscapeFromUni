@@ -1,0 +1,57 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "": {
+            "scaleInDock": 1
+        },
+        "Bob_idle_16x16.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/DELL/OneDrive/Desktop/coding/Bob_idle_16x16.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/DELL/OneDrive/Desktop/coding/Interiors_free_16x16.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/DELL/OneDrive/Desktop/coding/Room_Builder_free_16x16.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/DELL/OneDrive/Desktop/coding/SoftEngPrjct/Interiors_free_16x16.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/DELL/OneDrive/Desktop/coding/SoftEngPrjct/Room_Builder_free_16x16.tsx": {
+            "scaleInDock": 1
+        },
+        "C:/Users/DELL/OneDrive/Desktop/coding/collisionBox.tsx": {
+            "scaleInDock": 1
+        },
+        "Interiors_free_16x16.tsx": {
+            "scaleInDock": 1
+        },
+        "Room_Builder_free_16x16.tsx": {
+            "scaleInDock": 1
+        }
+    },
+    "last.externalTilesetPath": "C:/Users/DELL/OneDrive/Desktop/coding/EscapeFromUni/assets",
+    "last.imagePath": "C:/Users/DELL/OneDrive/Desktop/coding/EscapeFromUni/assets",
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "openFiles": [
+    ],
+    "project": "ShopLevelProject.tiled-project",
+    "recentFiles": [
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    }
+}
