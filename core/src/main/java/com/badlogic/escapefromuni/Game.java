@@ -159,7 +159,12 @@ public class Game {
 
         mapCollisionLayer = (TiledMapTileLayer) map.getLayers().get("Collision");
 
+        camera.setToOrtho(false,mapCollisionLayer.getWidth(),mapCollisionLayer.getHeight());
+        mapRenderer.setView(camera);
+
+
         viewport.setWorldSize(mapCollisionLayer.getWidth(),mapCollisionLayer.getHeight());
+
 
         mapExitBackLayer = (TiledMapTileLayer) map.getLayers().get("ExitBack");
         mapExitForwardLayer = (TiledMapTileLayer) map.getLayers().get("ExitForward");
