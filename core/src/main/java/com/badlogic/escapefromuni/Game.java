@@ -72,25 +72,7 @@ public class Game {
     TiledMapTileLayer mapExitSideLayer;
     ArrayList<Rectangle> mapExitSideCollisions;
 
-<<<<<<< Updated upstream
-=======
-    //added for shop ui logic
-    TiledMapTileLayer mapShopLayer;
-    ArrayList<Rectangle> mapShopCollisions;
 
-    //added for path collision in BusStop
-    TiledMapTileLayer mapPathLayer;
-    ArrayList<Rectangle> mapPathCollisions;
-
-    Texture emptyMinimapIcon;
-    Texture playerMinimapIcon;
-
-    //used by will for side level
-    //Level level2;
-
-    ArrayList<Sprite> minimapSprites;
-
->>>>>>> Stashed changes
     // Runs at start
     public Game() {
 
@@ -107,25 +89,6 @@ public class Game {
                 levels.get(i).setNextLevel(levels.get(i+1));
             }
         }
-
-        // Set up misc. side level stuff here
-<<<<<<< Updated upstream
-        Level level2 = new Level2();
-        levels.get(1).setSideLevel(level2);
-        level2.setSideLevel(levels.get(1));
-=======
-
-        // Jacob: Currently set up for ShopLevel instead of level 2
-        Level ShopLevel = new ShopLevel();
-        levels.get(1).setSideLevel(ShopLevel);
-        ShopLevel.setSideLevel(levels.get(1));
-
-        ShopLevel.setMinimapSprite(new Sprite(emptyMinimapIcon));
-        ShopLevel.getMinimapSprite().setX(38f-minimapTileSize);
-        ShopLevel.getMinimapSprite().setSize(minimapTileSize-0.1f,minimapTileSize-0.1f);
-
-            
->>>>>>> Stashed changes
 
 
         // The player always starts at the first level in the array.
