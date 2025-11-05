@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "ShopLevel.tmx",
+    "activeFile": "",
     "expandedProjectPaths": [
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
@@ -32,42 +32,23 @@
         "C:/Users/DELL/OneDrive/Desktop/coding/collisionBox.tsx": {
             "scaleInDock": 1
         },
-        "C:/Users/huzai/collisionBox.tsx": {
-            "scaleInDock": 1
-        },
         "Interiors_free_16x16.tsx": {
             "scaleInDock": 1
         },
         "Room_Builder_free_16x16.tsx": {
             "scaleInDock": 1
-        },
-        "ShopLevel.tmx": {
-            "scale": 1.0628125,
-            "selectedLayer": 5,
-            "viewCenter": {
-                "x": 319.90591002646283,
-                "y": 261.099676565716
-            }
-        },
-        "tilesets/collisionBox.tsx": {
-            "scaleInDock": 1
         }
     },
-    "last.externalTilesetPath": "C:/Users/huzai/EscapeFromUni/assets/tilesets",
+    "last.externalTilesetPath": "C:/Users/DELL/OneDrive/Desktop/coding/EscapeFromUni/assets",
     "last.imagePath": "C:/Users/DELL/OneDrive/Desktop/coding/EscapeFromUni/assets",
-    "map.height": 30,
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 16,
     "map.tileWidth": 16,
-    "map.width": 40,
     "openFiles": [
-        "ShopLevel.tmx"
     ],
     "project": "ShopLevelProject.tiled-project",
     "recentFiles": [
-        "ShopLevel.tmx"
     ],
-    "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
         "height": 16,

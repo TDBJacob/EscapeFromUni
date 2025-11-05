@@ -1,9 +1,9 @@
 package com.badlogic.escapefromuni;
 
-import com.badlogic.escapefromuni.levels.Level;
-import com.badlogic.escapefromuni.levels.Level0;
-import com.badlogic.escapefromuni.levels.Level1;
-import com.badlogic.escapefromuni.levels.Level2;
+import com.badlogic.escapefromuni.levels.*;
+import com.badlogic.escapefromuni.Player;
+import com.badlogic.escapefromuni.powerups.EnegryDrinkPowerUp;
+import com.badlogic.escapefromuni.powerups.PowerUp;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -13,27 +13,32 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapLayers;
-import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import org.w3c.dom.css.Rect;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.awt.*;
 
 public class Game {
 
+    public boolean gameEnded;
+    public int Score;
+    public String WinOrLose;
+
     final float root2 = 1.41f;
+
+    float minimapTileSize = 1.4f;
+
+    Player player = new Player(16f);//set default speed
 
     ArrayList<Level> levels;
 
@@ -44,10 +49,6 @@ public class Game {
     Texture moneyTexture;
     Sprite moneySprite;
     Rectangle moneyRectangle;
-    
-    // Player sprite
-    Texture playerTexture;
-    Sprite playerSprite;
     SpriteBatch spriteBatch;
 
     Level currentLevel;
@@ -72,16 +73,37 @@ public class Game {
     TiledMapTileLayer mapExitSideLayer;
     ArrayList<Rectangle> mapExitSideCollisions;
 
+    //added for shop ui logic
+    TiledMapTileLayer mapShopLayer;
+    ArrayList<Rectangle> mapShopCollisions;
+
+    Texture emptyMinimapIcon;
+    Texture playerMinimapIcon;
+
+    //used by will for side level
+    //Level level2;
+
+    ArrayList<Sprite> minimapSprites;
 
     // Runs at start
     public Game() {
 
+        WinOrLose = "Return"; // Should be "Return"
+        gameEnded = false;
+        Score = 0;
+
         // IMPORTANT: This is the list of levels, the player can traverse back and forth in this order.
         //            Add appropriate exits forward and/or backward in the tilemap on their individual layers.
-        levels = new ArrayList<Level>(Arrays.asList(new Level0(), new Level1()));
+        levels = new ArrayList<Level>(Arrays.asList(new LibraryFloor3(), new LibraryFloor2(), new LibraryFloor1(), new LibraryFloor0()));
+
+        emptyMinimapIcon = new Texture("emptyminimap.png");
+        playerMinimapIcon = new Texture("occupiedminimap.png");
 
         // This sets the next and previous level attributes of the room objects for ease of use
         for (int i = 0; i < levels.size(); i++){
+            levels.get(i).setMinimapSprite(new Sprite(emptyMinimapIcon));
+            levels.get(i).getMinimapSprite().setX(38f);
+            levels.get(i).getMinimapSprite().setSize(minimapTileSize-0.1f,minimapTileSize-0.1f);
             if (i-1>=0){
                 levels.get(i).setPrevLevel(levels.get(i-1));
             }
@@ -90,12 +112,26 @@ public class Game {
             }
         }
 
+        // Set up misc. side level stuff here
+
+        // Jacob: Currently set up for ShopLevel instead of level 2
+        Level ShopLevel = new ShopLevel();
+        levels.get(1).setSideLevel(ShopLevel);
+        ShopLevel.setSideLevel(levels.get(1));
+
+        ShopLevel.setMinimapSprite(new Sprite(emptyMinimapIcon));
+        ShopLevel.getMinimapSprite().setX(38f-minimapTileSize);
+        ShopLevel.getMinimapSprite().setSize(minimapTileSize-0.1f,minimapTileSize-0.1f);
+
+
+
 
         // The player always starts at the first level in the array.
         currentLevel = levels.get(0);
 
         viewport = new FitViewport(40, 30);
-        map = new TmxMapLoader().load("practice.tmx");
+        // Change made here, starting level is floor 3 of the library (a tmx).
+        map = new TmxMapLoader().load("maps/libraryfloor3.tmx");
         unitScale = 1/ 16f;
         mapRenderer = new OrthogonalTiledMapRenderer(map, unitScale);
         camera = new OrthographicCamera();
@@ -104,8 +140,8 @@ public class Game {
         moneyTexture = new Texture("vecteezy_pack-of-dollars-money-clipart-design-illustration_9391394.png");
         moneySprite = new Sprite(moneyTexture);
         moneySprite.setSize(1, 1);
-        moneySprite.setX(20);
-        moneySprite.setY(1);
+        moneySprite.setX(40);
+        moneySprite.setY(27);
         moneyRectangle = new Rectangle();
         spriteBatch = new SpriteBatch();
 
@@ -134,17 +170,24 @@ public class Game {
         // Prepare your application here.
         currentLevel = newLevel;
 
+        newLevel.getMinimapSprite().setTexture(playerMinimapIcon);
+
         map = new TmxMapLoader().load(newLevel.getMapName());
         mapRenderer.setMap(map);
         if (enterDirection == "Forward") {
             moneySprite.setX(newLevel.getStartX());
             moneySprite.setY(newLevel.getStartY());
+            if (newLevel.getPrevLevel() != null) {
+                newLevel.getPrevLevel().getMinimapSprite().setTexture(emptyMinimapIcon);
+            }
         } else if (enterDirection == "Side") {
             moneySprite.setX(newLevel.getSideX());
             moneySprite.setY(newLevel.getSideY());
+            newLevel.getSideLevel().getMinimapSprite().setTexture(emptyMinimapIcon);
         } else if (enterDirection == "Back") {
             moneySprite.setX(newLevel.getEndX());
             moneySprite.setY(newLevel.getEndY());
+            newLevel.getNextLevel().getMinimapSprite().setTexture(emptyMinimapIcon);
         }
 
         mapCollisionLayer = (TiledMapTileLayer) map.getLayers().get("Collision");
@@ -153,12 +196,22 @@ public class Game {
 
         mapExitBackLayer = (TiledMapTileLayer) map.getLayers().get("ExitBack");
         mapExitForwardLayer = (TiledMapTileLayer) map.getLayers().get("ExitForward");
+        //check for ExitSide
         if (mapLayersToList(map.getLayers()).contains("ExitSide")) {
             mapExitSideLayer = (TiledMapTileLayer) map.getLayers().get("ExitSide");
             mapExitSideCollisions = createCollisionRects(mapExitSideLayer);
         } else {
             mapExitSideLayer = null;
             mapExitSideCollisions = new ArrayList<Rectangle>();
+        }
+
+        //same logic for shopblock layer
+        if (mapLayersToList(map.getLayers()).contains("ShopBlock")) {
+            mapShopLayer = (TiledMapTileLayer) map.getLayers().get("ShopBlock");
+            mapShopCollisions = createCollisionRects(mapShopLayer);
+        } else {
+            mapShopLayer = null;
+            mapShopCollisions = new ArrayList<Rectangle>();
         }
 
         // mapCollisions will be used to collide, update when switching map.
@@ -199,34 +252,37 @@ public class Game {
         // Resize your application here. The parameters represent the new window size.
     }
 
-    // Runs every frame
-    public void render() {
-        // Draw your application here.
-        input();
-        logic();
-        draw();
-    }
+    //render is called in main
 
-    private void input() {
-        float speed = 16f; // Player's speed
+    public void input() {
+        //float speed = 16f; // Player's speed
         float delta = Gdx.graphics.getDeltaTime(); // Change in time between frames
+        player.update(delta); //called to check for active powerups
 
         // We will use these variables to allow for consistent speed on diagonal movement.
         float velX = 0f;
         float velY = 0f;
 
+        //experiment of power up
+        //a key press (P) will be used to give the power up instead of a gui button for now
+        //higher than 1.5 X speed crashes the collision logic and breaks the game
+        if (Gdx.input.isKeyPressed((Input.Keys.E)) ){
+            PowerUp drinkPowerUp = new EnegryDrinkPowerUp(1.1f, 5.0f);
+            player.addPowerUp(drinkPowerUp);
+        }
+
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
-            velX = speed * delta; // Convert to speed/s for consistent gameplay on different FPS
+            velX = player.getSpeed() * delta; // Convert to speed/s for consistent gameplay on different FPS
         }
         else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
-            velX = -speed * delta;
+            velX = -player.getSpeed() * delta;
         }
         // Use if here rather than else if, so movement can happen on both axis at once
         if (Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) {
-            velY = speed * delta;
+            velY = player.getSpeed() * delta;
         }
         else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) {
-            velY = -speed * delta;
+            velY = -player.getSpeed() * delta;
         }
 
         // If the player moves diagonally, we need to divide their speed by root 2 to maintain the correct speed
@@ -287,6 +343,15 @@ public class Game {
             }
         }
 
+        //added for Shop Ui to be detected when the player collides
+        //with the player
+        for (Rectangle tileRect : mapShopCollisions) {
+            if (pRect.overlaps((tileRect))) {
+                //open shop UI
+                break;
+            }
+        }
+
     }
 
     // USED FOR MOVEMENT BASED WALL COLLISIONS ONLY
@@ -306,7 +371,7 @@ public class Game {
         return false;
     }
 
-    private void logic() {
+    public void logic() {
         // store the worldWidth and worldHeight as local variables for brevity
         float worldWidth = viewport.getWorldWidth();
         float worldHeight = viewport.getWorldHeight();
@@ -316,12 +381,36 @@ public class Game {
         // clamp y vals
         moneySprite.setY(MathUtils.clamp(moneySprite.getY(), 0, worldHeight - moneyHeight));
 
+        // Player rectangle constructed for collision logic in levels.
+        Rectangle playerRectangle = new Rectangle(moneySprite.getX(), moneySprite.getY(), 1, 1);
+
         float delta = Gdx.graphics.getDeltaTime();
+        // Updates the level entities.
+        this.currentLevel.update(delta);
+        // Collision logic for active level.
+        if (this.currentLevel.collides(new Rectangle(moneySprite.getX(), moneySprite.getY(), 1, 1))) {
+            // Some logic here to add time to the clock, as player has collided with an enemy.
+            // Could be abstracted to another method in this class.
+            // Showing it works.
+            System.out.println("Player collided with entity.");
+        }
         // apply the bucket position and size to the bucket rectangle
 
     }
 
-    private void draw() {
+
+    public void shopLogic(){
+        //
+    }
+    //called when player collides with "ShopBlock"
+    public void openShop(){
+        //draw shop
+
+        //
+    }
+
+
+    public void draw() {
         ScreenUtils.clear(Color.BLACK);
         viewport.apply();
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
@@ -335,6 +424,10 @@ public class Game {
 
         //spriteBatch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight); // draw the background
         //spriteBatch.draw(knightTexture, 0, 0, 1, 1); // draw the bucket -- made obsolete by use of Sprite
+
+        // Draws the level entities.
+        this.currentLevel.draw(spriteBatch);
+
         moneySprite.draw(spriteBatch); // Sprites have their own draw method
 
         // draw each Sprite
@@ -342,7 +435,21 @@ public class Game {
         //dropSprite.draw(spriteBatch);
         //}
 
+        drawMinimap();
+
         spriteBatch.end();
+    }
+
+    private void drawMinimap() {
+        for (int i = 0; i < levels.size(); i++){
+            float h = +24+i*minimapTileSize;
+            levels.get(i).getMinimapSprite().setY(h);
+            if (levels.get(i).getSideLevel() != null) {
+                levels.get(i).getSideLevel().getMinimapSprite().setY(h);
+                levels.get(i).getSideLevel().getMinimapSprite().draw(spriteBatch);
+            }
+            levels.get(i).getMinimapSprite().draw(spriteBatch);
+        }
     }
 
     public void pause() {
