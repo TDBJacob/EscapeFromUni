@@ -271,7 +271,7 @@ public class Game {
         //experiment of power up
         //a key press (P) will be used to give the power up instead of a gui button for now
         //higher than 1.5 X speed crashes the collision logic and breaks the game
-        if (Gdx.input.isKeyPressed((Input.Keys.P)) ){
+        if (Gdx.input.isKeyPressed((Input.Keys.E)) ){
             PowerUp drinkPowerUp = new EnegryDrinkPowerUp(1.1f, 5.0f);
             player.addPowerUp(drinkPowerUp);
         }
