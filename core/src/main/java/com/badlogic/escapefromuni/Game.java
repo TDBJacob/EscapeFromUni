@@ -94,7 +94,7 @@ public class Game {
 
         // IMPORTANT: This is the list of levels, the player can traverse back and forth in this order.
         //            Add appropriate exits forward and/or backward in the tilemap on their individual layers.
-        levels = new ArrayList<Level>(Arrays.asList(new LibraryFloor3(), new LibraryFloor2(), new LibraryFloor1(), new LibraryFloor0()));
+        levels = new ArrayList<Level>(Arrays.asList(new LibraryFloor0(), new LibraryFloor1(), new LibraryFloor2(), new LibraryFloor3(), new BusLevel()));
 
         emptyMinimapIcon = new Texture("emptyminimap.png");
         playerMinimapIcon = new Texture("occupiedminimap.png");
@@ -130,8 +130,8 @@ public class Game {
         currentLevel = levels.get(0);
 
         viewport = new FitViewport(40, 30);
-        // Change made here, starting level is floor 3 of the library (a tmx).
-        map = new TmxMapLoader().load("maps/libraryfloor3.tmx");
+        // Starting level is floor 0 of the library (a tmx).
+        map = new TmxMapLoader().load("maps/libraryfloor0.tmx");
         unitScale = 1/ 16f;
         mapRenderer = new OrthogonalTiledMapRenderer(map, unitScale);
         camera = new OrthographicCamera();
