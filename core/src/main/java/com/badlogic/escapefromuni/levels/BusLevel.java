@@ -6,6 +6,7 @@ import java.util.List;
 import com.badlogic.escapefromuni.BusStop.Coin;
 import com.badlogic.escapefromuni.BusStop.GameTimer;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -30,6 +31,7 @@ public class BusLevel extends Level {
     private final GameTimer gameTimer;
     private boolean busUnlocked;
     private int coinsCollected;
+    private final BitmapFont font;
     
     // Game constants
     private static final float COIN_SIZE = 1f; // 1 tile size
@@ -70,6 +72,9 @@ public class BusLevel extends Level {
         // Initialize game timer
         gameTimer = new GameTimer(GAME_TIME);
         gameTimer.start();
+
+        // Initialize font for UI
+        font = new BitmapFont();
 
         // Initialize game state
         coinsCollected = 0;
@@ -155,6 +160,9 @@ public class BusLevel extends Level {
                 coin.draw(batch);
             }
         }
+
+        // Draw coin counter
+        font.draw(batch, coinsCollected + "/" + TOTAL_COINS + " coins", 10, 470);
     }
 
     @Override
