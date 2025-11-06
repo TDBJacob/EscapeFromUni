@@ -1,10 +1,11 @@
 package com.badlogic.escapefromuni.levels;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.graphics.g2d.Sprite;
-
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
-import java.awt.*;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.math.Rectangle;
 
 public abstract class Level {
 
@@ -90,5 +91,15 @@ public abstract class Level {
     }
     public void setMinimapSprite(Sprite newSprite) {
         this.minimapIcon = newSprite;
+    }
+
+    /**
+     * Optional lifecycle hook invoked when the game switches to this level.
+     * Provides the collision layer and collision rectangles for the level so
+     * implementations can query map data (for example, to place collectibles).
+     * Default implementation does nothing.
+     */
+    public void onEnter(TiledMapTileLayer mapCollisionLayer, ArrayList<Rectangle> mapCollisions) {
+        // default: no-op
     }
 }

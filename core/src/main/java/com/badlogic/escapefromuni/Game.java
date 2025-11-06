@@ -249,6 +249,8 @@ public class Game {
 
         // mapCollisions will be used to collide, update when switching map.
         mapCollisions = createCollisionRects(mapCollisionLayer);
+    // Notify the level that it has been entered so it can access map collision data
+    newLevel.onEnter(mapCollisionLayer, mapCollisions);
     }
 
     // Constructs an ArrayList of all collision rectangles for the layer provided
@@ -439,11 +441,18 @@ public class Game {
         // Updates the level entities.
         this.currentLevel.update(delta);
         // Collision logic for active level.
-        if (this.currentLevel.collides(new Rectangle(moneySprite.getX(), moneySprite.getY(), 1, 1))) {
-            // Some logic here to add time to the clock, as player has collided with an enemy.
-            // Could be abstracted to another method in this class.
-            // Showing it works.
-            System.out.println("Player collided with entity.");
+        Rectangle playerRect = new Rectangle(moneySprite.getX(), moneySprite.getY(), 1, 1);
+        boolean collided = this.currentLevel.collides(playerRect);
+        if (collided) {
+            // If we're on the BusLevel and the player has reached the bus, switch back to the previous level
+            if (this.currentLevel instanceof com.badlogic.escapefromuni.levels.BusLevel) {
+                if (this.currentLevel.getPrevLevel() != null) {
+                    switchToLevel(this.currentLevel.getPrevLevel(), "Back");
+                }
+            } else {
+                // Generic collision handling for other levels
+                System.out.println("Player collided with entity.");
+            }
         }
         // apply the bucket position and size to the bucket rectangle
 
