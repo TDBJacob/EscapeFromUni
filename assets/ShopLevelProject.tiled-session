@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "Bus.tmx",
     "expandedProjectPaths": [
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
@@ -13,6 +13,14 @@
         },
         "Bob_idle_16x16.tsx": {
             "scaleInDock": 1
+        },
+        "Bus.tmx": {
+            "scale": 1.3745312499999998,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 320.1091281118563,
+                "y": 239.71808571103787
+            }
         },
         "C:/Users/DELL/OneDrive/Desktop/coding/Bob_idle_16x16.tsx": {
             "scaleInDock": 1
@@ -37,6 +45,15 @@
         },
         "Room_Builder_free_16x16.tsx": {
             "scaleInDock": 1
+        },
+        "tilesets/collisionBox.tsx": {
+            "scaleInDock": 1
+        },
+        "tilesets/exitBox.tsx": {
+            "scaleInDock": 1
+        },
+        "tilesets/library_tileset.tsx": {
+            "scaleInDock": 1
         }
     },
     "last.externalTilesetPath": "C:/Users/DELL/OneDrive/Desktop/coding/EscapeFromUni/assets",
@@ -45,9 +62,11 @@
     "map.tileHeight": 16,
     "map.tileWidth": 16,
     "openFiles": [
+        "Bus.tmx"
     ],
     "project": "ShopLevelProject.tiled-project",
     "recentFiles": [
+        "Bus.tmx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
