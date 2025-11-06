@@ -211,8 +211,24 @@ public class Game {
 
         viewport.setWorldSize(mapCollisionLayer.getWidth(),mapCollisionLayer.getHeight());
 
-        mapExitBackLayer = (TiledMapTileLayer) map.getLayers().get("ExitBack");
-        mapExitForwardLayer = (TiledMapTileLayer) map.getLayers().get("ExitForward");
+        // Handle ExitBack layer (may not exist in all maps)
+        if (mapLayersToList(map.getLayers()).contains("ExitBack")) {
+            mapExitBackLayer = (TiledMapTileLayer) map.getLayers().get("ExitBack");
+            mapExitBackCollisions = createCollisionRects(mapExitBackLayer);
+        } else {
+            mapExitBackLayer = null;
+            mapExitBackCollisions = new ArrayList<Rectangle>();
+        }
+        
+        // Handle ExitForward layer (may not exist in all maps)
+        if (mapLayersToList(map.getLayers()).contains("ExitForward")) {
+            mapExitForwardLayer = (TiledMapTileLayer) map.getLayers().get("ExitForward");
+            mapExitForwardCollisions = createCollisionRects(mapExitForwardLayer);
+        } else {
+            mapExitForwardLayer = null;
+            mapExitForwardCollisions = new ArrayList<Rectangle>();
+        }
+        
         //check for ExitSide
         if (mapLayersToList(map.getLayers()).contains("ExitSide")) {
             mapExitSideLayer = (TiledMapTileLayer) map.getLayers().get("ExitSide");
@@ -233,8 +249,6 @@ public class Game {
 
         // mapCollisions will be used to collide, update when switching map.
         mapCollisions = createCollisionRects(mapCollisionLayer);
-        mapExitBackCollisions = createCollisionRects(mapExitBackLayer);
-        mapExitForwardCollisions = createCollisionRects(mapExitForwardLayer);
     }
 
     // Constructs an ArrayList of all collision rectangles for the layer provided
@@ -345,6 +359,20 @@ public class Game {
                     switchToLevel(currentLevel.getNextLevel(),"Forward");
                 }
                 break;
+            }
+        }
+        
+        // Workaround: If on LibraryFloor3 and no ExitForward layer exists, check if player is at end position
+        // and automatically transition to BusLevel
+        if (currentLevel.getMapName().equals("maps/libraryfloor3.tmx") && mapExitForwardCollisions.isEmpty()) {
+            int endX = currentLevel.getEndX();
+            int endY = currentLevel.getEndY();
+            if (endX >= 0 && endY >= 0) {
+                Rectangle endRect = new Rectangle(endX, endY, 1, 1);
+                if (pRect.overlaps(endRect) && currentLevel.getNextLevel() != null) {
+                    switchToLevel(currentLevel.getNextLevel(), "Forward");
+                    return;
+                }
             }
         }
 
