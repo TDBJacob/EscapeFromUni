@@ -362,7 +362,7 @@ public class Game {
             }
         }
         
-        // Workaround: If on LibraryFloor3 and no ExitForward layer exists, check if player is at end position
+        // If on LibraryFloor3 and no ExitForward layer exists, check if player is at end position
         // and automatically transition to BusLevel
         if (currentLevel.getMapName().equals("maps/libraryfloor3.tmx") && mapExitForwardCollisions.isEmpty()) {
             int endX = currentLevel.getEndX();

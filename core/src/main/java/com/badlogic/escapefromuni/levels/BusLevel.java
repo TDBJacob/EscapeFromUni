@@ -8,7 +8,7 @@ public class BusLevel extends Level {
     public BusLevel() {
         mapName = "Bus.tmx";
 
-        startX = 20;
+        startX = 18;
         startY = 1;
 
         endX = 20;
