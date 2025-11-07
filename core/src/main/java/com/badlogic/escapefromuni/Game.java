@@ -8,10 +8,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.MapObjects;
@@ -92,6 +89,17 @@ public class Game {
     BitmapFont smallFont;
     GlyphLayout layout;
 
+    TextureAtlas atlas;
+    Texture walkSheet;
+    Animation<TextureRegion> stationaryAnimation;
+    Animation<TextureRegion> upAnimation;
+    Animation<TextureRegion> downAnimation;
+    Animation<TextureRegion> rightAnimation;
+
+    float stateTime;
+
+    String moveDirection;
+
     //used by will for side level
     //Level level2;
 
@@ -123,6 +131,44 @@ public class Game {
         positiveEventsEncountered = 0;
         negativeEventsEncountered = 0;
         hiddenEventsEncountered = 0;
+
+        moveDirection = "Stationary";
+
+        walkSheet = new Texture("prototype_character.png");
+        atlas = new TextureAtlas();
+
+        int ssCols = 4;
+        int ssRows = 12;
+
+        TextureRegion[][] tmp = TextureRegion.split(walkSheet,
+            walkSheet.getWidth() / ssCols,
+            walkSheet.getHeight() / ssRows);
+
+        TextureRegion[] stationaryFrames = new TextureRegion[2];
+        int index = 0;
+        for (int i = 0; i < 2; i++) {
+            stationaryFrames[index++] = tmp[0][i];
+        }
+        TextureRegion[] upFrames = new TextureRegion[4];
+        index = 0;
+        for (int i = 0; i < 4; i++) {
+            upFrames[index++] = tmp[5][i];
+        }
+        TextureRegion[] downFrames = new TextureRegion[4];
+        index = 0;
+        for (int i = 0; i < 4; i++) {
+            downFrames[index++] = tmp[3][i];
+        }
+        TextureRegion[] rightFrames = new TextureRegion[4];
+        index = 0;
+        for (int i = 0; i < 4; i++) {
+            rightFrames[index++] = tmp[4][i];
+        }
+
+        stationaryAnimation = new Animation<TextureRegion>(0.1f, stationaryFrames);
+        upAnimation = new Animation<TextureRegion>(0.025f, upFrames);
+        downAnimation = new Animation<TextureRegion>(0.025f, downFrames);
+        rightAnimation = new Animation<TextureRegion>(0.025f, rightFrames);
 
         // IMPORTANT: This is the list of levels, the player can traverse back and forth in this order.
         //            Add appropriate exits forward and/or backward in the tilemap on their individual layers.
@@ -197,6 +243,7 @@ public class Game {
         moneyRectangle.x = moneySprite.getX();
         moneyRectangle.y = moneySprite.getY();
 
+        stateTime = 0f;
     }
 
     private ArrayList<String> mapLayersToList(MapLayers mapLayers) {
@@ -313,18 +360,34 @@ public class Game {
             player.addPowerUp(drinkPowerUp);
         }
 
+        String oldMoveDir = moveDirection;
+        boolean isMoving = false;
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
             velX = player.getSpeed() * delta; // Convert to speed/s for consistent gameplay on different FPS
+            moveDirection = "Right";
+            isMoving = true;
         }
         else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
             velX = -player.getSpeed() * delta;
+            moveDirection = "Left";
+            isMoving = true;
         }
         // Use if here rather than else if, so movement can happen on both axis at once
         if (Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) {
             velY = player.getSpeed() * delta;
+            moveDirection = "Up";
+            isMoving = true;
         }
         else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) {
             velY = -player.getSpeed() * delta;
+            moveDirection = "Down";
+            isMoving = true;
+        }
+        if (!isMoving) {
+            moveDirection = "Stationary";
+        }
+        if (moveDirection != oldMoveDir) {
+            stateTime = 0f;
         }
 
         // If the player moves diagonally, we need to divide their speed by root 2 to maintain the correct speed
@@ -465,12 +528,31 @@ public class Game {
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         mapRenderer.render();
 
+        stateTime += Gdx.graphics.getDeltaTime()*0.25f; // Accumulate elapsed animation time
+
         spriteBatch.begin();
 
         // Draws the level entities.
         this.currentLevel.draw(spriteBatch);
 
-        moneySprite.draw(spriteBatch); // Draw the character
+        TextureRegion currentFrame;
+
+        if (moveDirection == "Stationary") {
+            currentFrame = stationaryAnimation.getKeyFrame(stateTime, true);
+        } else if (moveDirection == "Down") {
+            currentFrame = downAnimation.getKeyFrame(stateTime, true);
+        } else if (moveDirection == "Up") {
+            currentFrame = upAnimation.getKeyFrame(stateTime, true);
+        } else {
+            currentFrame = rightAnimation.getKeyFrame(stateTime, true);
+        }
+
+        if (moveDirection == "Left") {
+            spriteBatch.draw(currentFrame, moneySprite.getX() + moneyWidth / 2 + 1.3f, moneySprite.getY() - moneyHeight / 2 - 0.25f, -2.5f, 2.5f);
+        } else {
+            spriteBatch.draw(currentFrame, moneySprite.getX() - moneyWidth / 2 - 0.3f, moneySprite.getY() - moneyHeight / 2 - 0.25f, 2.5f, 2.5f);
+        }
+        //moneySprite.draw(spriteBatch); // Draw the character
 
         drawMinimap();
 

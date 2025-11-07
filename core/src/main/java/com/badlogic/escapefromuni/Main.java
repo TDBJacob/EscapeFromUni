@@ -206,7 +206,7 @@ public class Main implements ApplicationListener {
 
     private void drawMainMenu() {
 
-        ScreenUtils.clear(Color.SKY);
+        ScreenUtils.clear(Color.SALMON);
         viewport.apply();
         batch.setProjectionMatrix(viewport.getCamera().combined);
         batch.begin();
