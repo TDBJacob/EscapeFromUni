@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * The LibraryFloor1 class represents the first floor of the Library level, floor 1.
  */
-public class LibraryFloor1 extends Level{
+public class R03_LibraryFloor1 extends Level{
 
     // Instantiate the library card.
 
@@ -33,7 +33,7 @@ public class LibraryFloor1 extends Level{
     /**
      * Constructs a new LibraryFloor1 with its name (path), in addition to start and end coordinates.
      */
-    public LibraryFloor1() {
+    public R03_LibraryFloor1() {
         // Name of the level.
         mapName = "maps/libraryfloor1.tmx";
 
