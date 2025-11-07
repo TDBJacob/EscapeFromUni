@@ -464,7 +464,7 @@ public class Game {
         viewport.apply();
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         mapRenderer.render();
-        //spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
+
         spriteBatch.begin();
 
         // Draws the level entities.
@@ -476,32 +476,35 @@ public class Game {
 
         spriteBatch.end();
 
+        // Draw the ui after this spritebatch as we use a separate viewport / camera
         drawUI();
     }
 
     private void drawUI() {
+        // We use a separate ui viewport / camera as the game's resolution is too low to write any text.
         uiViewport.apply();
         spriteBatch.setProjectionMatrix(uiCamera.combined);
 
         spriteBatch.begin();
 
+        // Format the time as mm:ss from the second remaining
         String tempSecs = ""+(gameTimer.getSecsRemaining()%60);
         if (tempSecs.length() == 1) {
             tempSecs = "0"+tempSecs;
         }
         String tempMins = "0"+(gameTimer.getSecsRemaining()/60);
 
+        // Draw the formatted timer at the top center of the screen
         layout.setText(font, tempMins+":"+tempSecs);
-
         float tempx = (uiViewport.getWorldWidth() - layout.width) / 2f;
-
         font.draw(spriteBatch, layout, tempx, 900);
 
-        //rename to dubloons or something if feeling adventurous
+        // Draw the coin counter at the top center of the screen, under the timer
         layout.setText(smallFont, "Coins: "+player.getCoins());
         tempx = (uiViewport.getWorldWidth() - layout.width) / 2f;
         smallFont.draw(spriteBatch, layout, tempx, 820);
 
+        // Draw all the event counters
         smallFont.draw(spriteBatch, "Positive Events: "+positiveEventsEncountered, 20, 950);
         smallFont.draw(spriteBatch, "Negative Events: "+negativeEventsEncountered, 20, 900);
         smallFont.draw(spriteBatch, "Hidden Events: "+hiddenEventsEncountered, 20, 850);

@@ -77,7 +77,7 @@ public class Main implements ApplicationListener {
         pausedText = new Texture("pausedtext.png");
 
         //this.setScreen(new MainMenuScreen(this));
-        playButtonTexture = new Texture("Blue_rectangle.png");
+        playButtonTexture = new Texture("playButton.png");
         playButtonSprite = new Sprite(playButtonTexture);
         playButtonSprite.setSize(1280/3, 200);
         playButtonSprite.setPosition(1280/3,100);
