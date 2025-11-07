@@ -10,8 +10,11 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
@@ -33,12 +36,13 @@ public class Game {
     public boolean gameEnded;
     public int Score;
     public String WinOrLose;
+    public Timer gameTimer;
 
     final float root2 = 1.41f;
 
     float minimapTileSize = 1.4f;
 
-    Player player = new Player(16f);//set default speed
+    Player player = new Player();
 
     ArrayList<Level> levels;
 
@@ -50,6 +54,13 @@ public class Game {
     Sprite moneySprite;
     Rectangle moneyRectangle;
     SpriteBatch spriteBatch;
+
+    FitViewport uiViewport;
+    OrthographicCamera uiCamera;
+
+    int positiveEventsEncountered;
+    int negativeEventsEncountered;
+    int hiddenEventsEncountered;
 
     Level currentLevel;
 
@@ -80,10 +91,29 @@ public class Game {
     Texture emptyMinimapIcon;
     Texture playerMinimapIcon;
 
+    BitmapFont font;
+    BitmapFont smallFont;
+    GlyphLayout layout;
+
     //used by will for side level
     //Level level2;
 
     ArrayList<Sprite> minimapSprites;
+
+    private BitmapFont genFont(int size) {
+        BitmapFont tempFont = new BitmapFont();
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Roboto-Regular.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = size;
+        parameter.borderWidth = 1;
+        parameter.borderColor = com.badlogic.gdx.graphics.Color.BLACK;
+        parameter.color = com.badlogic.gdx.graphics.Color.WHITE;
+        parameter.magFilter = com.badlogic.gdx.graphics.Texture.TextureFilter.Linear; // smooth scaling up
+        parameter.minFilter = com.badlogic.gdx.graphics.Texture.TextureFilter.Linear; // smooth scaling down
+        tempFont = generator.generateFont(parameter);
+        generator.dispose();
+        return tempFont;
+    }
 
     // Runs at start
     public Game() {
@@ -91,6 +121,11 @@ public class Game {
         WinOrLose = "Return"; // Should be "Return"
         gameEnded = false;
         Score = 0;
+        gameTimer = new Timer(5*60);
+
+        positiveEventsEncountered = 0;
+        negativeEventsEncountered = 0;
+        hiddenEventsEncountered = 0;
 
         // IMPORTANT: This is the list of levels, the player can traverse back and forth in this order.
         //            Add appropriate exits forward and/or backward in the tilemap on their individual layers.
@@ -124,6 +159,10 @@ public class Game {
         ShopLevel.getMinimapSprite().setSize(minimapTileSize-0.1f,minimapTileSize-0.1f);
 
 
+        // Generate font and layout
+        layout = new GlyphLayout();
+        font = genFont(90);
+        smallFont = genFont(30);
 
 
         // The player always starts at the first level in the array.
@@ -139,11 +178,16 @@ public class Game {
         mapRenderer.setView(camera);
         moneyTexture = new Texture("vecteezy_pack-of-dollars-money-clipart-design-illustration_9391394.png");
         moneySprite = new Sprite(moneyTexture);
-        moneySprite.setSize(1, 1);
+        // Slightly smaller than a tile to allow for easier movement between 1 tile wide gaps
+        moneySprite.setSize(0.95f, 0.95f);
         moneySprite.setX(40);
         moneySprite.setY(27);
         moneyRectangle = new Rectangle();
         spriteBatch = new SpriteBatch();
+
+        uiCamera = new OrthographicCamera();
+        uiViewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), uiCamera);
+        uiCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         switchToLevel(currentLevel, "Forward");
 
@@ -245,6 +289,7 @@ public class Game {
 
     public void resize(int width, int height) {
         viewport.update(width, height, true); // true centers the camera
+        uiViewport.update(width, height, true);
         // If the window is minimized on a desktop (LWJGL3) platform, width and height are 0, which causes problems.
         // In that case, we don't resize anything, and wait for the window to be a normal size before updating.
         if(width <= 0 || height <= 0) return;
@@ -255,7 +300,6 @@ public class Game {
     //render is called in main
 
     public void input() {
-        //float speed = 16f; // Player's speed
         float delta = Gdx.graphics.getDeltaTime(); // Change in time between frames
         player.update(delta); //called to check for active powerups
 
@@ -372,6 +416,14 @@ public class Game {
     }
 
     public void logic() {
+        gameTimer.tick(); // So that the timer counts down
+
+        if (gameTimer.hasCompleted()) {
+            WinOrLose = "Lose";
+            gameEnded = true;
+            return;
+        }
+
         // store the worldWidth and worldHeight as local variables for brevity
         float worldWidth = viewport.getWorldWidth();
         float worldHeight = viewport.getWorldHeight();
@@ -409,7 +461,6 @@ public class Game {
         //
     }
 
-
     public void draw() {
         ScreenUtils.clear(Color.BLACK);
         viewport.apply();
@@ -418,24 +469,40 @@ public class Game {
         //spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.begin();
 
-        // store the worldWidth and worldHeight as local variables for brevity
-        //float worldWidth = viewport.getWorldWidth();
-        //float worldHeight = viewport.getWorldHeight();
-
-        //spriteBatch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight); // draw the background
-        //spriteBatch.draw(knightTexture, 0, 0, 1, 1); // draw the bucket -- made obsolete by use of Sprite
-
         // Draws the level entities.
         this.currentLevel.draw(spriteBatch);
 
-        moneySprite.draw(spriteBatch); // Sprites have their own draw method
-
-        // draw each Sprite
-        //for (Sprite dropSprite : dropSprites) {
-        //dropSprite.draw(spriteBatch);
-        //}
+        moneySprite.draw(spriteBatch); // Draw the character
 
         drawMinimap();
+
+        spriteBatch.end();
+
+        drawUI();
+    }
+
+    private void drawUI() {
+        uiViewport.apply();
+        spriteBatch.setProjectionMatrix(uiCamera.combined);
+
+        spriteBatch.begin();
+
+        String tempSecs = ""+(gameTimer.getSecsRemaining()%60);
+        if (tempSecs.length() == 1) {
+            tempSecs = "0"+tempSecs;
+        }
+        String tempMins = "0"+(gameTimer.getSecsRemaining()/60);
+
+        layout.setText(font, tempMins+":"+tempSecs);
+
+        float tempx = (uiViewport.getWorldWidth() - layout.width) / 2f;
+        float tempy = 900;
+
+        font.draw(spriteBatch, layout, tempx, tempy);
+
+        smallFont.draw(spriteBatch, "Positive Events: "+positiveEventsEncountered, 20, 950);
+        smallFont.draw(spriteBatch, "Negative Events: "+negativeEventsEncountered, 20, 900);
+        smallFont.draw(spriteBatch, "Hidden Events: "+hiddenEventsEncountered, 20, 850);
 
         spriteBatch.end();
     }

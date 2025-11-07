@@ -1,5 +1,8 @@
 package com.badlogic.escapefromuni.levels;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
+
 public class ShopLevel extends Level{
 
     public ShopLevel() {
@@ -11,4 +14,18 @@ public class ShopLevel extends Level{
     }
 
 
+    @Override
+    public void update(float deltaTime) {
+
+    }
+
+    @Override
+    public void draw(SpriteBatch batch) {
+
+    }
+
+    @Override
+    public boolean collides(Rectangle rectangle) {
+        return false;
+    }
 }
