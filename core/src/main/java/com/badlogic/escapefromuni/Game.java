@@ -1,10 +1,8 @@
 package com.badlogic.escapefromuni;
 
 import com.badlogic.escapefromuni.levels.*;
-import com.badlogic.escapefromuni.Player;
 import com.badlogic.escapefromuni.powerups.EnegryDrinkPowerUp;
 import com.badlogic.escapefromuni.powerups.PowerUp;
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -14,7 +12,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.MapObjects;
-import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -26,7 +23,6 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.awt.*;
 
 public class Game {
 
@@ -94,7 +90,7 @@ public class Game {
 
         // IMPORTANT: This is the list of levels, the player can traverse back and forth in this order.
         //            Add appropriate exits forward and/or backward in the tilemap on their individual layers.
-        levels = new ArrayList<Level>(Arrays.asList(new LibraryFloor3(), new LibraryFloor2(), new LibraryFloor1(), new LibraryFloor0()));
+        levels = new ArrayList<Level>(Arrays.asList(new R01_LibraryFloor3(), new R02_LibraryFloor2(), new R03_LibraryFloor1(), new R04_LibraryFloor0(), new R05_MarketSquare()));
 
         emptyMinimapIcon = new Texture("emptyminimap.png");
         playerMinimapIcon = new Texture("occupiedminimap.png");

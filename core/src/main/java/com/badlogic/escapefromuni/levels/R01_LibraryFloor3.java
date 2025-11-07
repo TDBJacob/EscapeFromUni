@@ -6,12 +6,12 @@ import com.badlogic.gdx.math.Rectangle;
 /**
  * The LibraryFloor3 class represents the third floor of the Library level, floor 3.
  */
-public class LibraryFloor3 extends Level{
+public class R01_LibraryFloor3 extends Level{
 
     /**
      * Constructs a new LibraryFloor3 with its name (path in assets), in addition to start and end coordinates.
      */
-    public LibraryFloor3() {
+    public R01_LibraryFloor3() {
         // Name of the level.
         mapName = "maps/libraryfloor3.tmx";
 
