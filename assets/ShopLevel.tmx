@@ -3,7 +3,7 @@
  <tileset firstgid="1" source="Room_Builder_free_16x16.tsx"/>
  <tileset firstgid="392" source="Interiors_free_16x16.tsx"/>
  <tileset firstgid="1816" source="Bob_idle_16x16.tsx"/>
- <tileset firstgid="1824" source="../../collisionBox.tsx"/>
+ <tileset firstgid="1824" source="../tilesets/collisionBox.tsx"/>
  <layer id="1" name="Background" width="40" height="30">
   <data encoding="csv">
 188,189,189,189,189,193,193,193,193,193,189,189,189,189,189,189,189,189,189,189,189,189,189,189,189,189,189,189,189,189,189,189,189,189,189,189,189,189,189,193,

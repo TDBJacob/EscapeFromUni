@@ -86,6 +86,7 @@ public class Game {
 
     Texture emptyMinimapIcon;
     Texture playerMinimapIcon;
+    float minimapBottomHeight;
 
     BitmapFont font;
     BitmapFont smallFont;
@@ -129,6 +130,7 @@ public class Game {
 
         emptyMinimapIcon = new Texture("emptyminimap.png");
         playerMinimapIcon = new Texture("occupiedminimap.png");
+        minimapBottomHeight = 22;
 
         // This sets the next and previous level attributes of the room objects for ease of use
         for (int i = 0; i < levels.size(); i++){
@@ -147,8 +149,8 @@ public class Game {
 
         // Jacob: Currently set up for ShopLevel instead of level 2
         Level ShopLevel = new ShopLevel();
-        levels.get(1).setSideLevel(ShopLevel);
-        ShopLevel.setSideLevel(levels.get(1));
+        levels.get(4).setSideLevel(ShopLevel);
+        ShopLevel.setSideLevel(levels.get(4));
 
         ShopLevel.setMinimapSprite(new Sprite(emptyMinimapIcon));
         ShopLevel.getMinimapSprite().setX(38f-minimapTileSize);
@@ -492,9 +494,13 @@ public class Game {
         layout.setText(font, tempMins+":"+tempSecs);
 
         float tempx = (uiViewport.getWorldWidth() - layout.width) / 2f;
-        float tempy = 900;
 
-        font.draw(spriteBatch, layout, tempx, tempy);
+        font.draw(spriteBatch, layout, tempx, 900);
+
+        //rename to dubloons or something if feeling adventurous
+        layout.setText(smallFont, "Coins: "+player.getCoins());
+        tempx = (uiViewport.getWorldWidth() - layout.width) / 2f;
+        smallFont.draw(spriteBatch, layout, tempx, 820);
 
         smallFont.draw(spriteBatch, "Positive Events: "+positiveEventsEncountered, 20, 950);
         smallFont.draw(spriteBatch, "Negative Events: "+negativeEventsEncountered, 20, 900);
@@ -505,7 +511,7 @@ public class Game {
 
     private void drawMinimap() {
         for (int i = 0; i < levels.size(); i++){
-            float h = +24+i*minimapTileSize;
+            float h = minimapBottomHeight+i*minimapTileSize;
             levels.get(i).getMinimapSprite().setY(h);
             if (levels.get(i).getSideLevel() != null) {
                 levels.get(i).getSideLevel().getMinimapSprite().setY(h);
