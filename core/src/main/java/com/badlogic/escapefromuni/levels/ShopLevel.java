@@ -20,11 +20,6 @@ public class ShopLevel extends Level{
     }
 
     // These are redundant as there are no entities on floor 3.
-    public void update(float deltaTime) {}
-    public void draw(SpriteBatch batch) {}
-    public boolean collides(Rectangle playerRectangle) {
-        return false;
-    }
 
     @Override
     public void update(float deltaTime) {
