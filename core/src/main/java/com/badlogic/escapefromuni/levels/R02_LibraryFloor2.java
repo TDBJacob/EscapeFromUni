@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * The LibraryFloor2 class represents the second floor of the Library level, floor 2.
  */
-public class LibraryFloor2 extends Level{
+public class R02_LibraryFloor2 extends Level{
 
     // Sliding enemies created.
     Texture paperTexture = new Texture("entities/paper.png");
@@ -23,7 +23,7 @@ public class LibraryFloor2 extends Level{
     /**
      * Constructs a new LibraryFloor2 with its name (path), in addition to start and end coordinates.
      */
-    public LibraryFloor2() {
+    public R02_LibraryFloor2() {
         // Name of the level.
         this.mapName = "maps/libraryfloor2.tmx";
 

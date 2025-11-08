@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "Bus.tmx",
+    "activeFile": "ShopLevel.tmx",
     "expandedProjectPaths": [
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
@@ -15,11 +15,11 @@
             "scaleInDock": 1
         },
         "Bus.tmx": {
-            "scale": 1.3745312499999998,
+            "scale": 0.75,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 320.1091281118563,
-                "y": 239.71808571103787
+                "x": 320.66666666666663,
+                "y": 239.3333333333333
             }
         },
         "C:/Users/DELL/OneDrive/Desktop/coding/Bob_idle_16x16.tsx": {
@@ -40,11 +40,22 @@
         "C:/Users/DELL/OneDrive/Desktop/coding/collisionBox.tsx": {
             "scaleInDock": 1
         },
+        "C:/Users/huzai/EscapeFromUni/tilesets/collisionBox.tsx": {
+            "scaleInDock": 1
+        },
         "Interiors_free_16x16.tsx": {
             "scaleInDock": 1
         },
         "Room_Builder_free_16x16.tsx": {
             "scaleInDock": 1
+        },
+        "ShopLevel.tmx": {
+            "scale": 1,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 301,
+                "y": 240.5
+            }
         },
         "tilesets/collisionBox.tsx": {
             "scaleInDock": 1
@@ -61,20 +72,23 @@
             "scaleInEditor": 1
         }
     },
-    "last.externalTilesetPath": "C:/Users/DELL/OneDrive/Desktop/coding/EscapeFromUni/assets",
+    "last.externalTilesetPath": "C:/Users/huzai/EscapeFromUni/assets/tilesets",
     "last.imagePath": "C:/Users/huzai/EscapeFromUni/assets/tilesets",
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 16,
     "map.tileWidth": 16,
     "openFiles": [
-        "Bus.tmx"
+        "Bus.tmx",
+        "ShopLevel.tmx"
     ],
     "project": "ShopLevelProject.tiled-project",
     "recentFiles": [
+        "Bus.tmx",
+        "ShopLevel.tmx",
         "tilesets/decoration.tsx",
-        "tilesets/library_tileset.tsx",
-        "Bus.tmx"
+        "tilesets/library_tileset.tsx"
     ],
+    "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
         "height": 16,

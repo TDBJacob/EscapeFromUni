@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Player {
     private float speed;
-    public final float defaultSpeed = 16f; //game start with this speed
+    public final float defaultSpeed = 20f; //game start with this speed
     private List<PowerUp> activePowerUps = new ArrayList<>(); //this will be the list containing all the active powerups
 
     private int coins;
@@ -44,8 +44,8 @@ public class Player {
     }
 
 
-    public Player(float speed){
-        this.speed = speed;
+    public Player() {
+        this.speed = defaultSpeed;
     }
 
     public void addPowerUp(PowerUp powerUp) {

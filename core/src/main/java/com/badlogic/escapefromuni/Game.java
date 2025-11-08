@@ -1,20 +1,17 @@
 package com.badlogic.escapefromuni;
 
 import com.badlogic.escapefromuni.levels.*;
-import com.badlogic.escapefromuni.Player;
 import com.badlogic.escapefromuni.powerups.EnegryDrinkPowerUp;
 import com.badlogic.escapefromuni.powerups.PowerUp;
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.MapObjects;
-import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -26,19 +23,19 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.awt.*;
 
 public class Game {
 
     public boolean gameEnded;
     public int Score;
     public String WinOrLose;
+    public Timer gameTimer;
 
     final float root2 = 1.41f;
 
     float minimapTileSize = 1.4f;
 
-    Player player = new Player(16f);//set default speed
+    Player player = new Player();
 
     ArrayList<Level> levels;
 
@@ -50,6 +47,13 @@ public class Game {
     Sprite moneySprite;
     Rectangle moneyRectangle;
     SpriteBatch spriteBatch;
+
+    FitViewport uiViewport;
+    OrthographicCamera uiCamera;
+
+    int positiveEventsEncountered;
+    int negativeEventsEncountered;
+    int hiddenEventsEncountered;
 
     Level currentLevel;
 
@@ -79,11 +83,42 @@ public class Game {
 
     Texture emptyMinimapIcon;
     Texture playerMinimapIcon;
+    float minimapBottomHeight;
+
+    BitmapFont font;
+    BitmapFont smallFont;
+    GlyphLayout layout;
+
+    TextureAtlas atlas;
+    Texture walkSheet;
+    Animation<TextureRegion> stationaryAnimation;
+    Animation<TextureRegion> upAnimation;
+    Animation<TextureRegion> downAnimation;
+    Animation<TextureRegion> rightAnimation;
+
+    float stateTime;
+
+    String moveDirection;
 
     //used by will for side level
     //Level level2;
 
     ArrayList<Sprite> minimapSprites;
+
+    private BitmapFont genFont(int size) {
+        BitmapFont tempFont = new BitmapFont();
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Roboto-Regular.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = size;
+        parameter.borderWidth = 1;
+        parameter.borderColor = com.badlogic.gdx.graphics.Color.BLACK;
+        parameter.color = com.badlogic.gdx.graphics.Color.WHITE;
+        parameter.magFilter = com.badlogic.gdx.graphics.Texture.TextureFilter.Linear; // smooth scaling up
+        parameter.minFilter = com.badlogic.gdx.graphics.Texture.TextureFilter.Linear; // smooth scaling down
+        tempFont = generator.generateFont(parameter);
+        generator.dispose();
+        return tempFont;
+    }
 
     // Runs at start
     public Game() {
@@ -91,13 +126,57 @@ public class Game {
         WinOrLose = "Return"; // Should be "Return"
         gameEnded = false;
         Score = 0;
+        gameTimer = new Timer(5*60);
+
+        positiveEventsEncountered = 0;
+        negativeEventsEncountered = 0;
+        hiddenEventsEncountered = 0;
+
+        moveDirection = "Stationary";
+
+        walkSheet = new Texture("prototype_character.png");
+        atlas = new TextureAtlas();
+
+        int ssCols = 4;
+        int ssRows = 12;
+
+        TextureRegion[][] tmp = TextureRegion.split(walkSheet,
+            walkSheet.getWidth() / ssCols,
+            walkSheet.getHeight() / ssRows);
+
+        TextureRegion[] stationaryFrames = new TextureRegion[2];
+        int index = 0;
+        for (int i = 0; i < 2; i++) {
+            stationaryFrames[index++] = tmp[0][i];
+        }
+        TextureRegion[] upFrames = new TextureRegion[4];
+        index = 0;
+        for (int i = 0; i < 4; i++) {
+            upFrames[index++] = tmp[5][i];
+        }
+        TextureRegion[] downFrames = new TextureRegion[4];
+        index = 0;
+        for (int i = 0; i < 4; i++) {
+            downFrames[index++] = tmp[3][i];
+        }
+        TextureRegion[] rightFrames = new TextureRegion[4];
+        index = 0;
+        for (int i = 0; i < 4; i++) {
+            rightFrames[index++] = tmp[4][i];
+        }
+
+        stationaryAnimation = new Animation<TextureRegion>(0.1f, stationaryFrames);
+        upAnimation = new Animation<TextureRegion>(0.025f, upFrames);
+        downAnimation = new Animation<TextureRegion>(0.025f, downFrames);
+        rightAnimation = new Animation<TextureRegion>(0.025f, rightFrames);
 
         // IMPORTANT: This is the list of levels, the player can traverse back and forth in this order.
         //            Add appropriate exits forward and/or backward in the tilemap on their individual layers.
-        levels = new ArrayList<Level>(Arrays.asList(new LibraryFloor3(), new LibraryFloor2(), new LibraryFloor1(), new LibraryFloor0(), new BusLevel()));
+        levels = new ArrayList<Level>(Arrays.asList(new R01_LibraryFloor3(), new R02_LibraryFloor2(), new R03_LibraryFloor1(), new R04_LibraryFloor0(), new R05_MarketSquare(), new BusLevel()));
 
         emptyMinimapIcon = new Texture("emptyminimap.png");
         playerMinimapIcon = new Texture("occupiedminimap.png");
+        minimapBottomHeight = 22;
 
         // This sets the next and previous level attributes of the room objects for ease of use
         for (int i = 0; i < levels.size(); i++){
@@ -116,14 +195,19 @@ public class Game {
 
         // Jacob: Currently set up for ShopLevel instead of level 2
         Level ShopLevel = new ShopLevel();
-        levels.get(1).setSideLevel(ShopLevel);
-        ShopLevel.setSideLevel(levels.get(1));
+        levels.get(4).setSideLevel(ShopLevel);
+        ShopLevel.setSideLevel(levels.get(4));
 
         ShopLevel.setMinimapSprite(new Sprite(emptyMinimapIcon));
         ShopLevel.getMinimapSprite().setX(38f-minimapTileSize);
         ShopLevel.getMinimapSprite().setSize(minimapTileSize-0.1f,minimapTileSize-0.1f);
+        ShopLevel.setNextLevel(levels.get(5));
 
 
+        // Generate font and layout
+        layout = new GlyphLayout();
+        font = genFont(90);
+        smallFont = genFont(30);
 
 
         // The player always starts at the first level in the array.
@@ -139,11 +223,16 @@ public class Game {
         mapRenderer.setView(camera);
         moneyTexture = new Texture("vecteezy_pack-of-dollars-money-clipart-design-illustration_9391394.png");
         moneySprite = new Sprite(moneyTexture);
-        moneySprite.setSize(1, 1);
+        // Slightly smaller than a tile to allow for easier movement between 1 tile wide gaps
+        moneySprite.setSize(0.95f, 0.95f);
         moneySprite.setX(40);
         moneySprite.setY(27);
         moneyRectangle = new Rectangle();
         spriteBatch = new SpriteBatch();
+
+        uiCamera = new OrthographicCamera();
+        uiViewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), uiCamera);
+        uiCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         switchToLevel(currentLevel, "Forward");
 
@@ -155,6 +244,7 @@ public class Game {
         moneyRectangle.x = moneySprite.getX();
         moneyRectangle.y = moneySprite.getY();
 
+        stateTime = 0f;
     }
 
     private ArrayList<String> mapLayersToList(MapLayers mapLayers) {
@@ -174,6 +264,7 @@ public class Game {
         
         // Prepare your application here.
         currentLevel = newLevel;
+        
 
         newLevel.getMinimapSprite().setTexture(playerMinimapIcon);
 
@@ -278,6 +369,7 @@ public class Game {
 
     public void resize(int width, int height) {
         viewport.update(width, height, true); // true centers the camera
+        uiViewport.update(width, height, true);
         // If the window is minimized on a desktop (LWJGL3) platform, width and height are 0, which causes problems.
         // In that case, we don't resize anything, and wait for the window to be a normal size before updating.
         if(width <= 0 || height <= 0) return;
@@ -288,7 +380,6 @@ public class Game {
     //render is called in main
 
     public void input() {
-        //float speed = 16f; // Player's speed
         float delta = Gdx.graphics.getDeltaTime(); // Change in time between frames
         player.update(delta); //called to check for active powerups
 
@@ -304,18 +395,34 @@ public class Game {
             player.addPowerUp(drinkPowerUp);
         }
 
+        String oldMoveDir = moveDirection;
+        boolean isMoving = false;
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
             velX = player.getSpeed() * delta; // Convert to speed/s for consistent gameplay on different FPS
+            moveDirection = "Right";
+            isMoving = true;
         }
         else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
             velX = -player.getSpeed() * delta;
+            moveDirection = "Left";
+            isMoving = true;
         }
         // Use if here rather than else if, so movement can happen on both axis at once
         if (Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) {
             velY = player.getSpeed() * delta;
+            moveDirection = "Up";
+            isMoving = true;
         }
         else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) {
             velY = -player.getSpeed() * delta;
+            moveDirection = "Down";
+            isMoving = true;
+        }
+        if (!isMoving) {
+            moveDirection = "Stationary";
+        }
+        if (moveDirection != oldMoveDir) {
+            stateTime = 0f;
         }
 
         // If the player moves diagonally, we need to divide their speed by root 2 to maintain the correct speed
@@ -349,7 +456,6 @@ public class Game {
 
         // Check for collisions with non-walls and respond appropriately
         triggerCollisionCheck(moneyRectangle);
-
     }
 
     // USE FOR NON-WALL COLLISIONS, I.E ITEMS OR ROOM TRANSITIONS
@@ -425,6 +531,14 @@ public class Game {
     }
 
     public void logic() {
+        gameTimer.tick(); // So that the timer counts down
+
+        if (gameTimer.hasCompleted()) {
+            WinOrLose = "Lose";
+            gameEnded = true;
+            return;
+        }
+
         // store the worldWidth and worldHeight as local variables for brevity
         float worldWidth = viewport.getWorldWidth();
         float worldHeight = viewport.getWorldHeight();
@@ -469,40 +583,81 @@ public class Game {
         //
     }
 
-
     public void draw() {
         ScreenUtils.clear(Color.BLACK);
         viewport.apply();
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         mapRenderer.render();
-        //spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
+
+        stateTime += Gdx.graphics.getDeltaTime()*0.25f; // Accumulate elapsed animation time
+
         spriteBatch.begin();
-
-        // store the worldWidth and worldHeight as local variables for brevity
-        //float worldWidth = viewport.getWorldWidth();
-        //float worldHeight = viewport.getWorldHeight();
-
-        //spriteBatch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight); // draw the background
-        //spriteBatch.draw(knightTexture, 0, 0, 1, 1); // draw the bucket -- made obsolete by use of Sprite
 
         // Draws the level entities.
         this.currentLevel.draw(spriteBatch);
 
-        moneySprite.draw(spriteBatch); // Sprites have their own draw method
+        TextureRegion currentFrame;
 
-        // draw each Sprite
-        //for (Sprite dropSprite : dropSprites) {
-        //dropSprite.draw(spriteBatch);
-        //}
+        if (moveDirection == "Stationary") {
+            currentFrame = stationaryAnimation.getKeyFrame(stateTime, true);
+        } else if (moveDirection == "Down") {
+            currentFrame = downAnimation.getKeyFrame(stateTime, true);
+        } else if (moveDirection == "Up") {
+            currentFrame = upAnimation.getKeyFrame(stateTime, true);
+        } else {
+            currentFrame = rightAnimation.getKeyFrame(stateTime, true);
+        }
+
+        if (moveDirection == "Left") {
+            spriteBatch.draw(currentFrame, moneySprite.getX() + moneyWidth / 2 + 1.3f, moneySprite.getY() - moneyHeight / 2 - 0.25f, -2.5f, 2.5f);
+        } else {
+            spriteBatch.draw(currentFrame, moneySprite.getX() - moneyWidth / 2 - 0.3f, moneySprite.getY() - moneyHeight / 2 - 0.25f, 2.5f, 2.5f);
+        }
+        //moneySprite.draw(spriteBatch); // Draw the character
 
         drawMinimap();
+
+        spriteBatch.end();
+
+        // Draw the ui after this spritebatch as we use a separate viewport / camera
+        drawUI();
+    }
+
+    private void drawUI() {
+        // We use a separate ui viewport / camera as the game's resolution is too low to write any text.
+        uiViewport.apply();
+        spriteBatch.setProjectionMatrix(uiCamera.combined);
+
+        spriteBatch.begin();
+
+        // Format the time as mm:ss from the second remaining
+        String tempSecs = ""+(gameTimer.getSecsRemaining()%60);
+        if (tempSecs.length() == 1) {
+            tempSecs = "0"+tempSecs;
+        }
+        String tempMins = "0"+(gameTimer.getSecsRemaining()/60);
+
+        // Draw the formatted timer at the top center of the screen
+        layout.setText(font, tempMins+":"+tempSecs);
+        float tempx = (uiViewport.getWorldWidth() - layout.width) / 2f;
+        font.draw(spriteBatch, layout, tempx, 900);
+
+        // Draw the coin counter at the top center of the screen, under the timer
+        layout.setText(smallFont, "Coins: "+player.getCoins());
+        tempx = (uiViewport.getWorldWidth() - layout.width) / 2f;
+        smallFont.draw(spriteBatch, layout, tempx, 820);
+
+        // Draw all the event counters
+        smallFont.draw(spriteBatch, "Positive Events: "+positiveEventsEncountered, 20, 950);
+        smallFont.draw(spriteBatch, "Negative Events: "+negativeEventsEncountered, 20, 900);
+        smallFont.draw(spriteBatch, "Hidden Events: "+hiddenEventsEncountered, 20, 850);
 
         spriteBatch.end();
     }
 
     private void drawMinimap() {
         for (int i = 0; i < levels.size(); i++){
-            float h = +24+i*minimapTileSize;
+            float h = minimapBottomHeight+i*minimapTileSize;
             levels.get(i).getMinimapSprite().setY(h);
             if (levels.get(i).getSideLevel() != null) {
                 levels.get(i).getSideLevel().getMinimapSprite().setY(h);

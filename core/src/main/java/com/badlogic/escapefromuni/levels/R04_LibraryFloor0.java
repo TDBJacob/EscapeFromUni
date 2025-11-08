@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Rectangle;
 /**
  * The LibraryFloor0 class represents the ground floor of the Library level, floor 0.
  */
-public class LibraryFloor0 extends Level{
+public class R04_LibraryFloor0 extends Level{
 
     // Receptionist entity created.
     Texture receptionistTexture = new Texture("entities/receptionist.png");
@@ -17,7 +17,7 @@ public class LibraryFloor0 extends Level{
     /**
      * Constructs a new LibraryFloor0 with its name (path), in addition to start and end coordinates.
      */
-    public LibraryFloor0() {
+    public R04_LibraryFloor0() {
         // Name of the level.
         this.mapName = "maps/libraryfloor0.tmx";
 
