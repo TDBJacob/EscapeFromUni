@@ -1,10 +1,15 @@
 package com.badlogic.escapefromuni.levels;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
-
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
 import java.awt.*;
+
+import com.badlogic.escapefromuni.collectibles.Collectible;
+import com.badlogic.escapefromuni.entities.Enemy;
+import com.badlogic.escapefromuni.powerups.Powerup;
+
+import java.util.ArrayList;
+import com.badlogic.escapefromuni.Game;
 
 public abstract class Level {
 
@@ -14,7 +19,7 @@ public abstract class Level {
     protected int sideX = -1;
     protected int sideY = -1;
 
-    // endX and endY are used to spawn the player when they are backtracking, i.e moving back to the previous room
+    // endX and endY are used to spawn the player when they are backtracking, like moving back to the previous room
     protected int endX = -1;
     protected int endY = -1;
 
@@ -23,6 +28,10 @@ public abstract class Level {
     protected Level nextLevel = null;
     protected Level sideLevel = null;
     protected Level prevLevel = null;
+
+    protected ArrayList<Collectible> levelCoins;
+    protected ArrayList<Powerup> levelPowerups;
+    protected ArrayList<Enemy> levelEnemies;
 
     protected Sprite minimapIcon;
 
@@ -90,5 +99,27 @@ public abstract class Level {
     }
     public void setMinimapSprite(Sprite newSprite) {
         this.minimapIcon = newSprite;
+    }
+
+    public ArrayList<Collectible> getLevelCoins() {
+        return levelCoins;
+    }
+    public ArrayList<Powerup> getLevelPowerups() {
+        return levelPowerups;
+    }
+    public ArrayList<Enemy> getLevelEnemies() {
+        return levelEnemies;
+    }
+
+    // Takes in an even number of integers, and pairs them to make level coins
+    public static ArrayList<Collectible> generateLevelCoins(int... coinCoordinates) {
+        ArrayList<Collectible> newCoinList;
+        newCoinList = new ArrayList<>();
+        for (int i = 1; i <= coinCoordinates.length; i++) {
+            if (!((i % 2) == 0)) {
+                newCoinList.add(new Collectible(Game.coinTexture, Game.coinSound, coinCoordinates[i - 1], coinCoordinates[i]));
+            }
+        }
+        return newCoinList;
     }
 }

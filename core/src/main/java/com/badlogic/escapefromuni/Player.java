@@ -1,7 +1,7 @@
 package com.badlogic.escapefromuni;
 
 import com.badlogic.escapefromuni.ShopStuff.Item;
-import com.badlogic.escapefromuni.powerups.PowerUp;
+import com.badlogic.escapefromuni.powerups.Powerup;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -10,7 +10,7 @@ import java.util.List;
 public class Player {
     private float speed;
     public final float defaultSpeed = 8f; //game start with this speed
-    private List<PowerUp> activePowerUps = new ArrayList<>(); //this will be the list containing all the active powerups
+    private List<Powerup> activePowerUps = new ArrayList<>(); //this will be the list containing all the active powerups
 
     private int coins;
     private List<Item> inventory = new ArrayList<>();
@@ -48,7 +48,7 @@ public class Player {
         this.speed = defaultSpeed;
     }
 
-    public void addPowerUp(PowerUp powerUp) {
+    public void addPowerUp(Powerup powerUp) {
         powerUp.apply(this);
         activePowerUps.add(powerUp);
     }
@@ -68,9 +68,9 @@ public class Player {
 
     public void update(float deltaTime) {
         // Movement, game logic, etc.
-        Iterator<PowerUp> iterator = activePowerUps.iterator();
+        Iterator<Powerup> iterator = activePowerUps.iterator();
         while (iterator.hasNext()) {
-            PowerUp p = iterator.next();
+            Powerup p = iterator.next();
             if (p.update(this, deltaTime)) {
                 iterator.remove();
             }
