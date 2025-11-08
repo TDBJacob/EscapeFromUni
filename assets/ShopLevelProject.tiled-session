@@ -49,15 +49,20 @@
         "tilesets/collisionBox.tsx": {
             "scaleInDock": 1
         },
+        "tilesets/decoration.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
         "tilesets/exitBox.tsx": {
             "scaleInDock": 1
         },
         "tilesets/library_tileset.tsx": {
-            "scaleInDock": 1
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         }
     },
     "last.externalTilesetPath": "C:/Users/DELL/OneDrive/Desktop/coding/EscapeFromUni/assets",
-    "last.imagePath": "C:/Users/DELL/OneDrive/Desktop/coding/EscapeFromUni/assets",
+    "last.imagePath": "C:/Users/huzai/EscapeFromUni/assets/tilesets",
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 16,
     "map.tileWidth": 16,
@@ -66,6 +71,8 @@
     ],
     "project": "ShopLevelProject.tiled-project",
     "recentFiles": [
+        "tilesets/decoration.tsx",
+        "tilesets/library_tileset.tsx",
         "Bus.tmx"
     ],
     "tileset.lastUsedFormat": "tsx",
