@@ -5,6 +5,10 @@ import com.badlogic.escapefromuni.entities.YAxisSlidingEntity;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.escapefromuni.powerups.speedPowerup;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.escapefromuni.Game;
+import com.badlogic.escapefromuni.entities.Enemy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +18,6 @@ import java.util.List;
  * The LibraryFloor2 class represents the second floor of the Library level, floor 2.
  */
 public class R02_LibraryFloor2 extends Level{
-
     // Sliding enemies created.
     Texture paperTexture = new Texture("entities/paper.png");
     YAxisSlidingEntity paperY = new YAxisSlidingEntity(paperTexture, 9, 23, 8f, 1, 1, 22, 28);
@@ -26,6 +29,10 @@ public class R02_LibraryFloor2 extends Level{
     public R02_LibraryFloor2() {
         // Name of the level.
         this.mapName = "maps/libraryfloor2.tmx";
+
+        levelCoins = new ArrayList<>();
+        levelPowerups = new ArrayList<>();
+        levelEnemies = new ArrayList<>();
 
         // Tile that the player spawns at when first entering the level, or tile that takes player to previous level.
         this.startX = 38;

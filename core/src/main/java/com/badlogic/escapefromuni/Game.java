@@ -1,8 +1,8 @@
 package com.badlogic.escapefromuni;
 
 import com.badlogic.escapefromuni.levels.*;
-import com.badlogic.escapefromuni.powerups.EnegryDrinkPowerUp;
-import com.badlogic.escapefromuni.powerups.PowerUp;
+import com.badlogic.escapefromuni.powerups.speedPowerup;
+import com.badlogic.escapefromuni.powerups.Powerup;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
@@ -20,6 +20,9 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.escapefromuni.collectibles.Collectible;
+import com.badlogic.escapefromuni.entities.Enemy;
+import com.badlogic.gdx.audio.Sound;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +30,7 @@ import java.util.Arrays;
 public class Game {
 
     public boolean gameEnded;
-    public int Score;
+    public static int Score;
     public String WinOrLose;
     public Timer gameTimer;
 
@@ -44,8 +47,8 @@ public class Game {
     FitViewport viewport;
     OrthographicCamera camera;
     Texture moneyTexture;
-    Sprite moneySprite;
-    Rectangle moneyRectangle;
+    public static Sprite moneySprite;
+    public static Rectangle moneyRectangle;
     SpriteBatch spriteBatch;
 
     FitViewport uiViewport;
@@ -55,7 +58,7 @@ public class Game {
     int negativeEventsEncountered;
     int hiddenEventsEncountered;
 
-    Level currentLevel;
+    public static Level currentLevel;
 
     float unitScale;
 
@@ -64,6 +67,19 @@ public class Game {
 
     float moneyWidth;
     float moneyHeight;
+
+    public static Sound coinSound;
+    public static Sprite coinSprite;
+    public static Texture coinTexture;
+    public static Sound planetSound;
+    public static Sprite planetSprite;
+    public static Texture planetTexture;
+    public static Sound duckSound;
+    public static Sound duckSound2;
+    public static Texture duckTexture;
+    public static Texture duckSpeechBubbleTexture;
+    public static float speed = 16f;
+    public static float money = 0;
 
     TiledMapTileLayer mapCollisionLayer;
     ArrayList<Rectangle> mapCollisions;
@@ -125,12 +141,25 @@ public class Game {
 
         WinOrLose = "Return"; // Should be "Return"
         gameEnded = false;
-        Score = 0;
+        Score = 0; // Maybe issues with old lowercase "score" which needs to be replaced
         gameTimer = new Timer(5*60);
 
         positiveEventsEncountered = 0;
         negativeEventsEncountered = 0;
         hiddenEventsEncountered = 0;
+
+        coinSound = Gdx.audio.newSound(Gdx.files.internal("coin-drop-422703.mp3"));
+        coinTexture = new Texture("Custom_coin_sprite.png");
+        coinSprite = new Sprite(coinTexture);
+
+        planetSound = Gdx.audio.newSound(Gdx.files.internal("laser-90052.mp3"));
+        planetTexture = new Texture("Neptune_planet_v2.png");
+        planetSprite = new Sprite(planetTexture);
+
+        duckSound = Gdx.audio.newSound(Gdx.files.internal("duck-quack-112941.mp3"));
+        duckSound2 = Gdx.audio.newSound(Gdx.files.internal("short-beep-351721.mp3"));
+        duckTexture = new Texture("custom_duck.png");
+        duckSpeechBubbleTexture = new Texture("Custom_speech_bubble_v2.png");
 
         moveDirection = "Stationary";
 
@@ -172,7 +201,7 @@ public class Game {
 
         // IMPORTANT: This is the list of levels, the player can traverse back and forth in this order.
         //            Add appropriate exits forward and/or backward in the tilemap on their individual layers.
-        levels = new ArrayList<Level>(Arrays.asList(new R01_LibraryFloor3(), new R02_LibraryFloor2(), new R03_LibraryFloor1(), new R04_LibraryFloor0(), new R05_MarketSquare(), new BusLevel()));
+        levels = new ArrayList<Level>(Arrays.asList(new R01_LibraryFloor3(), new R02_LibraryFloor2(), new R03_LibraryFloor1(), new R04_LibraryFloor0(), new R05_MarketSquare(), new westToEastLevel(), new BusLevel()));
 
         emptyMinimapIcon = new Texture("emptyminimap.png");
         playerMinimapIcon = new Texture("occupiedminimap.png");
@@ -261,10 +290,10 @@ public class Game {
         if (newLevel == null) {
             return;
         }
-        
+
         // Prepare your application here.
         currentLevel = newLevel;
-        
+
 
         newLevel.getMinimapSprite().setTexture(playerMinimapIcon);
 
@@ -310,7 +339,7 @@ public class Game {
             mapExitBackLayer = null;
             mapExitBackCollisions = new ArrayList<Rectangle>();
         }
-        
+
         // Handle ExitForward layer (may not exist in all maps)
         if (mapLayersToList(map.getLayers()).contains("ExitForward")) {
             mapExitForwardLayer = (TiledMapTileLayer) map.getLayers().get("ExitForward");
@@ -319,7 +348,7 @@ public class Game {
             mapExitForwardLayer = null;
             mapExitForwardCollisions = new ArrayList<Rectangle>();
         }
-        
+
         //check for ExitSide
         if (mapLayersToList(map.getLayers()).contains("ExitSide")) {
             mapExitSideLayer = (TiledMapTileLayer) map.getLayers().get("ExitSide");
@@ -387,11 +416,14 @@ public class Game {
         float velX = 0f;
         float velY = 0f;
 
+        float moneyOldX = moneySprite.getX();
+        float moneyOldY = moneySprite.getY();
+
         //experiment of power up
         //a key press (P) will be used to give the power up instead of a gui button for now
         //higher than 1.5 X speed crashes the collision logic and breaks the game
         if (Gdx.input.isKeyPressed((Input.Keys.E)) ){
-            PowerUp drinkPowerUp = new EnegryDrinkPowerUp(1.1f, 5.0f);
+            Powerup drinkPowerUp = new speedPowerup(null, null, 0, 0, 1.1f, 5.0f);
             player.addPowerUp(drinkPowerUp);
         }
 
@@ -456,6 +488,31 @@ public class Game {
 
         // Check for collisions with non-walls and respond appropriately
         triggerCollisionCheck(moneyRectangle);
+
+        Enemy.enemyCollisionLogic(moneyOldX, moneyOldY);
+
+        for (Collectible coin : currentLevel.getLevelCoins()) {
+            if (!(coin.isCollected()) && moneyRectangle.overlaps(coin.getCollider())) {
+                coin.collect();
+                money += 10;
+                Score += 10;
+                coin.SoundEffect.play();
+            }
+        }
+
+        for (Powerup powerup : currentLevel.getLevelPowerups()) {
+            if (!(powerup.isCollected()) && moneyRectangle.overlaps(powerup.getCollider())) {
+                powerup.collect();
+                powerup.apply(player);
+                powerup.getSoundEffect().play();
+            }
+        }
+
+        for (Enemy enemy : currentLevel.getLevelEnemies()) {
+            if (enemy.getShowText()) {
+                enemy.speechTimeCheck(delta);
+            }
+        }
     }
 
     // USE FOR NON-WALL COLLISIONS, I.E ITEMS OR ROOM TRANSITIONS
@@ -469,7 +526,7 @@ public class Game {
                 break;
             }
         }
-        
+
         // If on LibraryFloor3 and no ExitForward layer exists, check if player is at end position
         // and automatically transition to BusLevel
         if (currentLevel.getMapName().equals("maps/libraryfloor3.tmx") && mapExitForwardCollisions.isEmpty()) {
@@ -616,6 +673,27 @@ public class Game {
         //moneySprite.draw(spriteBatch); // Draw the character
 
         drawMinimap();
+
+        for (Collectible coin : currentLevel.getLevelCoins()) {
+            if (!(coin.isCollected())) {
+                coin.render(spriteBatch);
+            }
+        }
+
+        for (Powerup planet : currentLevel.getLevelPowerups()) {
+            if (!(planet.isCollected())) {
+                planet.render(spriteBatch);
+            }
+        }
+
+        for (Enemy enemy : currentLevel.getLevelEnemies()) {
+            if (!(enemy.isDead())) {
+                enemy.render(spriteBatch);
+            }
+            if (enemy.getShowText()) {
+                enemy.renderSpeech(spriteBatch);
+            }
+        }
 
         spriteBatch.end();
 

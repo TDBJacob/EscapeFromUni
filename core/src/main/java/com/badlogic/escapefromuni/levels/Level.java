@@ -4,10 +4,21 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import java.awt.*;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.escapefromuni.collectibles.Collectible;
+import com.badlogic.escapefromuni.entities.Enemy;
+import com.badlogic.escapefromuni.powerups.Powerup;
+
+import java.util.ArrayList;
+import com.badlogic.escapefromuni.Game;
 
 public abstract class Level {
+
+    protected ArrayList<Collectible> levelCoins;
+    protected ArrayList<Powerup> levelPowerups;
+    protected ArrayList<Enemy> levelEnemies;
 
     protected int startX = -1;
     protected int startY = -1;
@@ -91,6 +102,28 @@ public abstract class Level {
     }
     public void setMinimapSprite(Sprite newSprite) {
         this.minimapIcon = newSprite;
+    }
+
+    public ArrayList<Collectible> getLevelCoins() {
+        return levelCoins;
+    }
+    public ArrayList<Powerup> getLevelPowerups() {
+        return levelPowerups;
+    }
+    public ArrayList<Enemy> getLevelEnemies() {
+        return levelEnemies;
+    }
+
+    // Takes in an even number of integers, and pairs them to make level coins
+    public static ArrayList<Collectible> generateLevelCoins(int... coinCoordinates) {
+        ArrayList<Collectible> newCoinList;
+        newCoinList = new ArrayList<>();
+        for (int i = 1; i <= coinCoordinates.length; i++) {
+            if (!((i % 2) == 0)) {
+                newCoinList.add(new Collectible(Game.coinTexture, Game.coinSound, coinCoordinates[i - 1], coinCoordinates[i]));
+            }
+        }
+        return newCoinList;
     }
 
     /**

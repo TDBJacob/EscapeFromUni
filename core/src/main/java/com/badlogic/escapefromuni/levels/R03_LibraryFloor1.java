@@ -5,6 +5,11 @@ import com.badlogic.escapefromuni.entities.YAxisSlidingEntity;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.escapefromuni.powerups.speedPowerup;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.escapefromuni.Game;
+import com.badlogic.escapefromuni.entities.Enemy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +41,10 @@ public class R03_LibraryFloor1 extends Level{
     public R03_LibraryFloor1() {
         // Name of the level.
         mapName = "maps/libraryfloor1.tmx";
+
+        levelCoins = new ArrayList<>();
+        levelPowerups = new ArrayList<>();
+        levelEnemies = new ArrayList<>();
 
         // Tile that the player spawns at when first entering the level, or tile that takes player to previous level.
         startX = 38;

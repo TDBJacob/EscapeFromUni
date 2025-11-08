@@ -2,6 +2,13 @@ package com.badlogic.escapefromuni.levels;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.escapefromuni.powerups.speedPowerup;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.escapefromuni.Game;
+import com.badlogic.escapefromuni.entities.Enemy;
+
+import java.util.ArrayList;
 
 /**
  * Constructs a new MarketSquare04 with its name (path in assets), in addition to start and end coordinates.
@@ -15,6 +22,10 @@ public class R05_MarketSquare extends Level{
     public R05_MarketSquare() {
         // Name of the level.
         mapName = "maps/Marketsquare.tmx";
+
+        levelCoins = new ArrayList<>();
+        levelPowerups = new ArrayList<>();
+        levelEnemies = new ArrayList<>();
 
         // Tile that the player spawns at when first entering the level.
         startX = 31;
