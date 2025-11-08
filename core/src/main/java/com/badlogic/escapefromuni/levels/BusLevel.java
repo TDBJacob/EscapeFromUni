@@ -12,6 +12,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.escapefromuni.powerups.speedPowerup;
+import com.badlogic.escapefromuni.Game;
+import com.badlogic.escapefromuni.entities.Enemy;
 
 /**
  * The BusLevel class represents the bus stop level where players need to collect coins
@@ -22,7 +25,7 @@ public class BusLevel extends Level {
     // Create textures for entities
     private final Texture busTexture = new Texture("Bus.png");
     private final Texture coinTexture = new Texture("vecteezy_pack-of-dollars-money-clipart-design-illustration_9391394.png");
-    
+
     // Create game entities
     private final Sprite busSprite;
     private final List<Coin> coins;
@@ -32,7 +35,7 @@ public class BusLevel extends Level {
     private boolean busUnlocked;
     private int coinsCollected;
     private final BitmapFont font;
-    
+
     // Game constants
     private static final float COIN_SIZE = 1f; // 1 tile size
     private static final int TOTAL_COINS = 10;
@@ -50,6 +53,10 @@ public class BusLevel extends Level {
      * and initializes the bus stop game elements.
      */
     public BusLevel() {
+        levelCoins = new ArrayList<>();
+        levelPowerups = new ArrayList<>();
+        levelEnemies = new ArrayList<>();
+
         // Name of the level
         mapName = "Bus.tmx";
 
@@ -153,7 +160,7 @@ public class BusLevel extends Level {
         if (busVisState == BusVisState.VISIBLE) {
             busSprite.draw(batch);
         }
-        
+
         // Draw coins
         for (Coin coin : coins) {
             if (!coin.isCollected()) {
