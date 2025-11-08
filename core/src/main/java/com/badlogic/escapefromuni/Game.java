@@ -94,7 +94,7 @@ public class Game {
 
         // IMPORTANT: This is the list of levels, the player can traverse back and forth in this order.
         //            Add appropriate exits forward and/or backward in the tilemap on their individual layers.
-        levels = new ArrayList<Level>(Arrays.asList(new LibraryFloor0(), new LibraryFloor1(), new LibraryFloor2(), new LibraryFloor3(), new BusLevel()));
+        levels = new ArrayList<Level>(Arrays.asList(new LibraryFloor3(), new LibraryFloor2(), new LibraryFloor1(), new LibraryFloor0(), new BusLevel()));
 
         emptyMinimapIcon = new Texture("emptyminimap.png");
         playerMinimapIcon = new Texture("occupiedminimap.png");
@@ -447,7 +447,7 @@ public class Game {
             // If we're on the BusLevel and the player has reached the bus, switch back to the previous level
             if (this.currentLevel instanceof com.badlogic.escapefromuni.levels.BusLevel) {
                 if (this.currentLevel.getPrevLevel() != null) {
-                    switchToLevel(this.currentLevel.getPrevLevel(), "Back");
+                    Gdx.app.exit();
                 }
             } else {
                 // Generic collision handling for other levels
