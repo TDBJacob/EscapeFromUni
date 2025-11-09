@@ -12,15 +12,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.escapefromuni.powerups.speedPowerup;
-import com.badlogic.escapefromuni.Game;
-import com.badlogic.escapefromuni.entities.Enemy;
 
 /**
  * The BusLevel class represents the bus stop level where players need to collect coins
  * before catching the bus.
  */
-public class BusLevel extends Level {
+public class R07_BusLevel extends Level {
 
     // Create textures for entities
     private final Texture busTexture = new Texture("Bus.png");
@@ -52,7 +49,7 @@ public class BusLevel extends Level {
      * Constructs a new BusLevel with its name (path), start and end coordinates,
      * and initializes the bus stop game elements.
      */
-    public BusLevel() {
+    public R07_BusLevel() {
         levelCoins = new ArrayList<>();
         levelPowerups = new ArrayList<>();
         levelEnemies = new ArrayList<>();

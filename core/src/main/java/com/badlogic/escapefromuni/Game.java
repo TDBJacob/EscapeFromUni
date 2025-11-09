@@ -1,5 +1,6 @@
 package com.badlogic.escapefromuni;
 
+import com.badlogic.escapefromuni.ShopStuff.Item;
 import com.badlogic.escapefromuni.levels.*;
 import com.badlogic.escapefromuni.powerups.speedPowerup;
 import com.badlogic.escapefromuni.powerups.Powerup;
@@ -29,6 +30,10 @@ import java.util.Arrays;
 
 public class Game {
 
+    //for testing shop
+    Sprite playButtonSprite;
+    Texture playButtonTexture;
+
     public boolean gameEnded;
     public static int Score;
     public String WinOrLose;
@@ -38,7 +43,7 @@ public class Game {
 
     float minimapTileSize = 1.4f;
 
-    Player player = new Player();
+    Player player = new Player(10);
 
     ArrayList<Level> levels;
 
@@ -116,8 +121,7 @@ public class Game {
 
     String moveDirection;
 
-    //used by will for side level
-    //Level level2;
+    public boolean shopActive;
 
     ArrayList<Sprite> minimapSprites;
 
@@ -201,7 +205,7 @@ public class Game {
 
         // IMPORTANT: This is the list of levels, the player can traverse back and forth in this order.
         //            Add appropriate exits forward and/or backward in the tilemap on their individual layers.
-        levels = new ArrayList<Level>(Arrays.asList(new R01_LibraryFloor3(), new R02_LibraryFloor2(), new R03_LibraryFloor1(), new R04_LibraryFloor0(), new R05_MarketSquare(), new westToEastLevel(), new BusLevel()));
+        levels = new ArrayList<Level>(Arrays.asList(new R01_LibraryFloor3(), new R02_LibraryFloor2(), new R03_LibraryFloor1(), new R04_LibraryFloor0(), new R05_MarketSquare(), new R06_westToEastLevel(), new R07_BusLevel()));
 
         emptyMinimapIcon = new Texture("emptyminimap.png");
         playerMinimapIcon = new Texture("occupiedminimap.png");
@@ -222,11 +226,11 @@ public class Game {
 
         // Set up misc. side level stuff here
 
-        // Jacob: Currently set up for ShopLevel instead of level 2
+        // Jacob: Currently set up for ShopLevel
         Level ShopLevel = new ShopLevel();
         levels.get(4).setSideLevel(ShopLevel);
         ShopLevel.setSideLevel(levels.get(4));
-
+        //generate minimap for side level
         ShopLevel.setMinimapSprite(new Sprite(emptyMinimapIcon));
         ShopLevel.getMinimapSprite().setX(38f-minimapTileSize);
         ShopLevel.getMinimapSprite().setSize(minimapTileSize-0.1f,minimapTileSize-0.1f);
@@ -274,6 +278,9 @@ public class Game {
         moneyRectangle.y = moneySprite.getY();
 
         stateTime = 0f;
+    }
+    public Player getPlayer(){
+        return this.player;
     }
 
     private ArrayList<String> mapLayersToList(MapLayers mapLayers) {
@@ -420,12 +427,12 @@ public class Game {
         float moneyOldY = moneySprite.getY();
 
         //experiment of power up
-        //a key press (P) will be used to give the power up instead of a gui button for now
+        //a key press (E) will be used to give the power up instead of a gui button for now
         //higher than 1.5 X speed crashes the collision logic and breaks the game
-        if (Gdx.input.isKeyPressed((Input.Keys.E)) ){
-            Powerup drinkPowerUp = new speedPowerup(null, null, 0, 0, 1.1f, 5.0f);
-            player.addPowerUp(drinkPowerUp);
-        }
+        //if (Gdx.input.isKeyPressed((Input.Keys.E)) ){
+        //    Powerup drinkPowerUp = new speedPowerup(null, null, 0, 0, 1.1f, 5.0f);
+        //    player.addPowerUp(drinkPowerUp);
+        //}
 
         String oldMoveDir = moveDirection;
         boolean isMoving = false;
@@ -563,7 +570,11 @@ public class Game {
         //with the player
         for (Rectangle tileRect : mapShopCollisions) {
             if (pRect.overlaps((tileRect))) {
-                //open shop UI
+                shopActive = true;
+                break;
+            }
+            else{
+                shopActive = false;
                 break;
             }
         }
@@ -616,7 +627,7 @@ public class Game {
         boolean collided = this.currentLevel.collides(playerRect);
         if (collided) {
             // If we're on the BusLevel and the player has reached the bus, switch back to the previous level
-            if (this.currentLevel instanceof com.badlogic.escapefromuni.levels.BusLevel) {
+            if (this.currentLevel instanceof R07_BusLevel) {
                 if (this.currentLevel.getPrevLevel() != null) {
                     Gdx.app.exit();
                 }
@@ -627,17 +638,6 @@ public class Game {
         }
         // apply the bucket position and size to the bucket rectangle
 
-    }
-
-
-    public void shopLogic(){
-        //
-    }
-    //called when player collides with "ShopBlock"
-    public void openShop(){
-        //draw shop
-
-        //
     }
 
     public void draw() {

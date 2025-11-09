@@ -3,15 +3,10 @@ package com.badlogic.escapefromuni.levels;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import java.util.ArrayList;
-import com.badlogic.escapefromuni.powerups.speedPowerup;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.escapefromuni.Game;
-import com.badlogic.escapefromuni.entities.Enemy;
 
-public class westToEastLevel extends Level{
+public class R06_westToEastLevel extends Level{
 
-    public westToEastLevel() {
+    public R06_westToEastLevel() {
 
         levelCoins = new ArrayList<>();
         levelPowerups = new ArrayList<>();

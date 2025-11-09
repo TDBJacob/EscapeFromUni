@@ -32,12 +32,12 @@ public class R05_MarketSquare extends Level{
         startY = 27;
 
         // Tile that takes player to next level, or starting tile if the player re-enters the level.
-        endX = 3;
-        endY = 4;
+        endX = 36;
+        endY = 3;
 
         // Tile that the player is moved to when entering the side level
-        sideX = 4;
-        sideY = 25;
+        sideX = 3;
+        sideY = 3;
     }
     // These are redundant as there are no entities on floor 3.
     public void update(float deltaTime) {}
