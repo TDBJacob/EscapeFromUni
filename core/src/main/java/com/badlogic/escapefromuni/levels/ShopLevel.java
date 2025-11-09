@@ -19,18 +19,18 @@ public class ShopLevel extends Level{
         levelPowerups = new ArrayList<>();
         levelEnemies = new ArrayList<>();
 
-        startX = 0;
-        startY = 27;
+        startX = 28;
+        startY = 15;
 
         endX = 16;
-        endY = 0;
+        endY = 3;
 
-        sideX = 28;
-        sideY = 15;
+        sideX = 6;
+        sideY = 20;
 
     }
 
-    // These are redundant as there are no entities on floor 3.
+    // These are redundant as there are no entities on shopLevel
 
     @Override
     public void update(float deltaTime) {

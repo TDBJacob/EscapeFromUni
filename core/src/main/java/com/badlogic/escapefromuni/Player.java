@@ -14,12 +14,20 @@ public class Player {
 
     private int coins;
     private List<Item> inventory = new ArrayList<>();
+    private boolean hasBirdFeed;
 
     //used for test only
     public Player(int startingCoins) {
         this.coins = startingCoins;
+        this.speed = defaultSpeed;
     }
 
+    public void setHasBirdFeed(){
+        this.hasBirdFeed = true;
+    }
+    public boolean isHasBirdFeed(){
+        return this.hasBirdFeed;
+    }
     public int getCoins() {
         return coins;
     }
@@ -67,7 +75,7 @@ public class Player {
     }
 
     public void update(float deltaTime) {
-        // Movement, game logic, etc.
+
         Iterator<Powerup> iterator = activePowerUps.iterator();
         while (iterator.hasNext()) {
             Powerup p = iterator.next();
@@ -75,6 +83,7 @@ public class Player {
                 iterator.remove();
             }
         }
+
     }
 
 

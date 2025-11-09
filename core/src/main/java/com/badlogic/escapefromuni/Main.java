@@ -1,5 +1,8 @@
 package com.badlogic.escapefromuni;
 
+import com.badlogic.escapefromuni.ShopStuff.Item;
+import com.badlogic.escapefromuni.UI.Mouse;
+import com.badlogic.escapefromuni.UI.ShopUI;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -50,6 +53,19 @@ public class Main implements ApplicationListener {
 
     boolean buttonCD;
 
+    ShopUI shopUI = new ShopUI();
+    Texture shopIconTexture;
+    Sprite shopIconSprite;
+    Texture buyEDTexture;
+    Sprite  buyEDSprite;
+    Texture buyBFTexture;
+    Sprite buyBFSprite;
+
+    BitmapFont shopfont;
+
+    //used for mouse coordinates
+    Mouse mouse = new Mouse();
+
     @Override
     public void create() {
         gameStarted = false;
@@ -71,6 +87,8 @@ public class Main implements ApplicationListener {
         parameter.magFilter = com.badlogic.gdx.graphics.Texture.TextureFilter.Linear; // smooth scaling up
         parameter.minFilter = com.badlogic.gdx.graphics.Texture.TextureFilter.Linear; // smooth scaling down
         font = generator.generateFont(parameter);
+        parameter.size = 60;
+        shopfont = generator.generateFont(parameter);
         generator.dispose();
 
         menuText = new Texture("escapefromunititle.png");
@@ -91,6 +109,25 @@ public class Main implements ApplicationListener {
         resumeButtonSprite = new Sprite(resumeButtonTexture);
         resumeButtonSprite.setSize(1280/3, 200);
         resumeButtonSprite.setPosition(1280/3,330);
+
+
+        //seperate shop UI
+        shopIconTexture = new Texture("shop290x248.png");
+        shopIconSprite = new Sprite(shopIconTexture);
+        shopIconSprite.setSize( 290, 248);
+        shopIconSprite.setPosition(800, 700);
+
+        buyEDTexture = new Texture("BuyEnergyDrink.png");
+        buyEDSprite = new Sprite(buyEDTexture);
+        buyEDSprite.setSize(290,120);
+        buyEDSprite.setPosition(viewport.getWorldWidth()/2, 450);
+
+        buyBFTexture = new Texture("BuyBirdFeed.png");
+        buyBFSprite = new Sprite(buyBFTexture);
+        buyBFSprite.setSize(290,120);
+        buyBFSprite.setPosition(viewport.getWorldWidth()/2, 250);
+
+
 
         //startGame();
     }
@@ -129,6 +166,8 @@ public class Main implements ApplicationListener {
                     ScreenUtils.clear(Color.CLEAR);
                 }
 
+
+
                 game.draw();
 
                 if (!paused) {
@@ -137,6 +176,10 @@ public class Main implements ApplicationListener {
                 } else {
                     drawPauseMenu();
                     inputPauseMenu();
+                }
+                if (game.shopActive){
+                    shopUI.drawShopMenu(viewport ,batch ,shopIconSprite,buyEDSprite,buyBFSprite, shopfont ,layout);
+                    shopUI.inputShopMenu(viewport, buyEDSprite,buyBFSprite, buttonCD, game.getPlayer());
                 }
             } else {
                 endGame(game.Score, game.WinOrLose);
@@ -190,17 +233,21 @@ public class Main implements ApplicationListener {
 
     private void inputMainMenu() {
         if (Gdx.input.isTouched()) {
-            float mouseX = Gdx.input.getX();
-            float mouseY = viewport.getScreenHeight()-Gdx.input.getY();
-
+            mouse.update(viewport);
 
             //Gdx.app.log("MyTag", mouseX + " " + mouseY);
             //Gdx.app.log("buttonxy", playButtonSprite.getBoundingRectangle().x+" "+playButtonSprite.getBoundingRectangle().y);
 
-            if (!buttonCD && playButtonSprite.getBoundingRectangle().contains(new Vector2(mouseX,mouseY))) {
+            if (!buttonCD && playButtonSprite.getBoundingRectangle().contains(new Vector2(mouse.getX(),mouse.getY()))) {
                 startGame();
                 buttonCD = true;
             }
+        }
+    }
+
+    private void inputShopUI() {
+        if (Gdx.input.isTouched()) {
+            mouse.update(viewport);
         }
     }
 
@@ -260,19 +307,14 @@ public class Main implements ApplicationListener {
 
     private void inputPauseMenu() {
         if (Gdx.input.isTouched()) {
-            float mouseX = Gdx.input.getX();
-            float mouseY = viewport.getScreenHeight()-Gdx.input.getY();
-
-
-            //Gdx.app.log("MyTag", mouseX + " " + mouseY);
-            //Gdx.app.log("buttonxy", playButtonSprite.getBoundingRectangle().x+" "+playButtonSprite.getBoundingRectangle().y);
+            mouse.update(viewport);
 
             if (!buttonCD) {
-                if (resumeButtonSprite.getBoundingRectangle().contains(new Vector2(mouseX, mouseY))) {
+                if (resumeButtonSprite.getBoundingRectangle().contains(new Vector2(mouse.getX(), mouse.getY()))) {
                     paused = false;
                     ScreenUtils.clear(Color.CLEAR);
                     game.draw();
-                } else if (returnToMenuButtonSprite.getBoundingRectangle().contains(new Vector2(mouseX, mouseY))) {
+                } else if (returnToMenuButtonSprite.getBoundingRectangle().contains(new Vector2(mouse.getX(), mouse.getY()))) {
                     endGame(game.Score, game.WinOrLose);
                     buttonCD = true;
                 }
