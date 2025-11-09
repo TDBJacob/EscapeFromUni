@@ -38,6 +38,8 @@ public class R05_MarketSquare extends Level{
         // Tile that the player is moved to when entering the side level
         sideX = 4;
         sideY = 25;
+
+        levelCoins = Level.generateLevelCoins(14, 28); // Needs even int pairs
     }
     // These are redundant as there are no entities on floor 3.
     public void update(float deltaTime) {}

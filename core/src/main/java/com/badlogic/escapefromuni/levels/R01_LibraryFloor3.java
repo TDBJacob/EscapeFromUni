@@ -24,7 +24,7 @@ public class R01_LibraryFloor3 extends Level{
         levelPowerups = new ArrayList<>();
         levelEnemies = new ArrayList<>();
 
-        levelCoins = Level.generateLevelCoins(14, 15); // Needs even int pairs
+        levelCoins = Level.generateLevelCoins(14, 20, 14, 8); // Needs even int pairs
         levelPowerups.add(new speedPowerup(Game.planetTexture, Game.planetSound, 25, 15, 1.5f, 300.0f));
         //levelEnemies.add(new Enemy(Game.duckTexture, Game.duckSound, 14, 12, "Duck"));
 

@@ -39,6 +39,8 @@ public class R04_LibraryFloor0 extends Level{
         // Tile that takes player to next level, or starting tile if the player re-enters the level.
         this.endX = 4;
         this.endY = 3;
+
+        levelCoins = Level.generateLevelCoins(38, 26); // Needs even int pairs
     }
 
     // To be invoked in Game to update the entities on this level, when it is the active level.

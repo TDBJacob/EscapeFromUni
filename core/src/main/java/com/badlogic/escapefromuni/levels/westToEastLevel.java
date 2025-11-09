@@ -1,5 +1,8 @@
 package com.badlogic.escapefromuni.levels;
 
+import com.badlogic.escapefromuni.powerups.Powerup;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import java.util.ArrayList;
@@ -27,6 +30,10 @@ public class westToEastLevel extends Level{
 
         nextLevel = null;
         prevLevel = null;
+
+        levelCoins = generateLevelCoins(18, 25, 23, 16, 25, 9);
+        levelPowerups.add(new speedPowerup(Game.planetTexture, Game.planetSound, 33, 14, 1.25f, 300.0f));
+        levelEnemies.add(new Enemy(Game.duckTexture, Game.duckSound, 23, 6, "Duck"));
     }
     public void update(float deltaTime) {}
     public void draw(SpriteBatch batch) {}

@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.escapefromuni.powerups.speedPowerup;
 import com.badlogic.escapefromuni.Game;
 import com.badlogic.escapefromuni.entities.Enemy;
+import com.badlogic.escapefromuni.Game;
 
 /**
  * The BusLevel class represents the bus stop level where players need to collect coins
@@ -89,6 +90,8 @@ public class BusLevel extends Level {
         // start with bus hidden and timer at 0 (will become visible after BUS_HIDDEN_SECONDS)
         busVisState = BusVisState.HIDDEN;
         busVisTimer = 0f;
+
+        levelPowerups.add(new speedPowerup(Game.planetTexture, Game.planetSound, 36, 16, 1.25f, 300.0f));
     }
     /**
      * Populate coins using the available walkable tiles. If availableTiles is empty,
@@ -178,6 +181,7 @@ public class BusLevel extends Level {
         for (Coin coin : coins) {
             if (!coin.isCollected() && playerRectangle.overlaps(coin.getCollisionBox())) {
                 coin.collect();
+                Game.coinSound.play();
                 coinsCollected++;
                 if (coinsCollected >= TOTAL_COINS) {
                     busUnlocked = true;

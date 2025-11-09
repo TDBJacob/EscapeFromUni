@@ -18,7 +18,7 @@ public class Enemy {
     protected Sprite enemySprite;
     protected String enemyAI;
     protected Boolean showText = false;
-    protected float speechMaxLength = 0.5f;
+    protected float speechMaxLength = 1f;
     protected float speechDuration;
     protected Texture speechTexture;
 
@@ -29,7 +29,7 @@ public class Enemy {
         this.enemyY = y;
         this.texture = textureName;
         this.soundEffect = sound;
-        this.enemyCollision = new Rectangle(enemyX, enemyY, 5, 1);
+        this.enemyCollision = new Rectangle(enemyX, enemyY, 6, 1);
         this.enemyAI = aiType;
         if (aiType == "Duck") {
             this.enemySpeech(Game.duckSpeechBubbleTexture);
@@ -46,7 +46,7 @@ public class Enemy {
     public void renderSpeech(SpriteBatch batch) {
         if ((!isDead) && this.showText) {
             if (this.enemyAI == "Duck") {
-                batch.draw(Game.duckSpeechBubbleTexture, this.enemyX + 1, this.enemyY + 1, 4, 4);
+                batch.draw(Game.duckSpeechBubbleTexture, this.enemyX + 1, this.enemyY + 1, 5, 5);
             }
         }
     }
