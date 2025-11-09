@@ -1,6 +1,9 @@
 package com.badlogic.escapefromuni.levels;
 
+import com.badlogic.escapefromuni.Game;
+import com.badlogic.escapefromuni.entities.Enemy;
 import com.badlogic.escapefromuni.powerups.Powerup;
+import com.badlogic.escapefromuni.powerups.speedPowerup;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
