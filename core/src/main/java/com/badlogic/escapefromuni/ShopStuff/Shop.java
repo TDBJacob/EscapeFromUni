@@ -1,8 +1,8 @@
 package com.badlogic.escapefromuni.ShopStuff;
 
-import com.badlogic.escapefromuni.Player;
+import com.badlogic.escapefromuni.entities.Player;
 import com.badlogic.escapefromuni.powerups.Powerup;
-import com.badlogic.escapefromuni.powerups.speedPowerup;
+import com.badlogic.escapefromuni.powerups.SpeedPowerup;
 
 public class Shop {
     //specially called off gui button press (item will be unique to the button)
@@ -13,8 +13,8 @@ public class Shop {
                 item.setisBought(true);
                 System.out.println(item.getName());
                 if (item.getName() == "energyDrink"){
-                    Powerup drinkPowerUp = new speedPowerup(null, null, 0, 0, 1.1f, 30.0f);
-                    player.addPowerUp(drinkPowerUp);
+                    SpeedPowerup drinkPowerUp = new SpeedPowerup(null, null, 0, 0, 1.1f, 30.0f);
+                    player.addSpeedPowerUp(drinkPowerUp);
                 }
                 if (item.getName() == "birdFeed"){
                     player.setHasBirdFeed();

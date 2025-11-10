@@ -1,11 +1,13 @@
 package com.badlogic.escapefromuni.levels;
 
+import com.badlogic.escapefromuni.collectibles.Wallet;
+import com.badlogic.escapefromuni.entities.Player;
 import com.badlogic.escapefromuni.entities.XAxisSlidingEntity;
 import com.badlogic.escapefromuni.entities.YAxisSlidingEntity;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.escapefromuni.powerups.speedPowerup;
+import com.badlogic.escapefromuni.powerups.SpeedPowerup;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.escapefromuni.Game;
 import com.badlogic.escapefromuni.entities.Enemy;
@@ -23,6 +25,7 @@ public class R02_LibraryFloor2 extends Level{
     YAxisSlidingEntity paperY = new YAxisSlidingEntity(paperTexture, 9, 23, 8f, 1, 1, 22, 28);
     XAxisSlidingEntity paperX = new XAxisSlidingEntity(paperTexture, 26, 20, 10f, 1, 1, 25, 31);
 
+    Wallet wallet = new Wallet();
     /**
      * Constructs a new LibraryFloor2 with its name (path), in addition to start and end coordinates.
      */
@@ -31,7 +34,7 @@ public class R02_LibraryFloor2 extends Level{
         this.mapName = "maps/libraryfloor2.tmx";
 
         levelCoins = new ArrayList<>();
-        levelPowerups = new ArrayList<>();
+        levelSpeedPowerups = new ArrayList<>();
         levelEnemies = new ArrayList<>();
 
         // Tile that the player spawns at when first entering the level, or tile that takes player to previous level.
@@ -46,11 +49,12 @@ public class R02_LibraryFloor2 extends Level{
     }
 
     // To be invoked in Game to update the entities on this level, when it is the active level.
-    public void update(float deltaTime) {
+    public void update(float deltaTime, Player player) {
         // Updates the position and logic of paperX.
         this.paperX.update(deltaTime);
         // Updates the position and logic of paperY.
         this.paperY.update(deltaTime);
+        this.wallet.update(player);
     }
 
     // To be invoked in Game to draw the entities on this level, when it is the active level.
@@ -59,10 +63,11 @@ public class R02_LibraryFloor2 extends Level{
         this.paperX.draw(batch);
         // Draws paperY.
         this.paperY.draw(batch);
+        this.wallet.draw(batch);
     }
 
     // To be invoked in Game to check collision between the player sprite and the entities on this level.
-    public boolean collides(com.badlogic.gdx.math.Rectangle playerRectangle) {
+    public boolean collides(Player player) {
         // Construct list of Rectangles for locations of entities.
         List<Rectangle> entityRectangles = new ArrayList<>();
         entityRectangles.add(new Rectangle(paperY.getSprite().getX(), paperY.getSprite().getY(), 1, 1));
@@ -70,7 +75,7 @@ public class R02_LibraryFloor2 extends Level{
 
         // Check if player rectangle collides with entity rectangles.
         for (Rectangle r : entityRectangles) {
-            if (r.overlaps(playerRectangle)) {
+            if (r.overlaps(player.getMoneyRectangle())) {
                 return true;
             }
         }

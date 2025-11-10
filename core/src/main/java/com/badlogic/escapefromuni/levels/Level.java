@@ -2,6 +2,8 @@ package com.badlogic.escapefromuni.levels;
 
 import java.util.ArrayList;
 
+import com.badlogic.escapefromuni.entities.Player;
+import com.badlogic.escapefromuni.powerups.SpeedPowerup;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import java.awt.*;
@@ -17,7 +19,7 @@ import com.badlogic.escapefromuni.Game;
 public abstract class Level {
 
     protected ArrayList<Collectible> levelCoins;
-    protected ArrayList<Powerup> levelPowerups;
+    protected ArrayList<SpeedPowerup> levelSpeedPowerups;
     protected ArrayList<Enemy> levelEnemies;
 
     protected int startX = -1;
@@ -44,7 +46,7 @@ public abstract class Level {
 
     // To be invoked in Game, in the logic method.
     // This will update the entities on the level.
-    public abstract void update(float deltaTime);
+    public abstract void update(float deltaTime, Player player);
 
     // To be invoked in Game, in the draw method.
     // This will re-draw the entities on the level in their updated positions.
@@ -53,7 +55,7 @@ public abstract class Level {
     // To be invoked in Game, in the logic method.
     // This will check collision logic between player and entities on the level.
     // Can have general use, i.e. can be expanded to collectibles.
-    public abstract boolean collides(com.badlogic.gdx.math.Rectangle rectangle);
+    public abstract boolean collides(Player player);
 
     public int getStartX() {
         return startX;
@@ -107,8 +109,8 @@ public abstract class Level {
     public ArrayList<Collectible> getLevelCoins() {
         return levelCoins;
     }
-    public ArrayList<Powerup> getLevelPowerups() {
-        return levelPowerups;
+    public ArrayList<SpeedPowerup> getLevelPowerups() {
+        return levelSpeedPowerups;
     }
     public ArrayList<Enemy> getLevelEnemies() {
         return levelEnemies;

@@ -1,8 +1,9 @@
 package com.badlogic.escapefromuni.levels;
 
+import com.badlogic.escapefromuni.entities.Player;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.escapefromuni.powerups.speedPowerup;
+import com.badlogic.escapefromuni.powerups.SpeedPowerup;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.escapefromuni.Game;
@@ -24,7 +25,7 @@ public class R05_MarketSquare extends Level{
         mapName = "maps/Marketsquare.tmx";
 
         levelCoins = new ArrayList<>();
-        levelPowerups = new ArrayList<>();
+        levelSpeedPowerups = new ArrayList<>();
         levelEnemies = new ArrayList<>();
 
         // Tile that the player spawns at when first entering the level.
@@ -41,9 +42,9 @@ public class R05_MarketSquare extends Level{
         levelCoins = Level.generateLevelCoins(14, 28); // Needs even int pairs
     }
     // These are redundant as there are no entities on floor 3.
-    public void update(float deltaTime) {}
+    public void update(float deltaTime, Player player) {}
     public void draw(SpriteBatch batch) {}
-    public boolean collides(Rectangle playerRectangle) {
+    public boolean collides(Player player) {
         return false;
     }
 }

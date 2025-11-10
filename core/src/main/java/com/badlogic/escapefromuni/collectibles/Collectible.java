@@ -19,6 +19,7 @@ public class Collectible {
     protected float itemY;
     protected Rectangle itemCollision;
     protected Boolean collected = false;
+    private boolean collectibleAdded = false;
 
     public Collectible (Texture textureName, Sound sound, float x, float y)
     {
@@ -37,6 +38,16 @@ public class Collectible {
 
     public void collect() {
         collected = true;
+    }
+
+    // Getter for collectibleAdded.
+    public boolean getCollectibleAdded() {
+        return this.collectibleAdded;
+    }
+
+    // Setter for collectibleAdded.
+    public void setCollectibleAdded(boolean collectibleAdded) {
+        this.collectibleAdded = collectibleAdded;
     }
 
     public Boolean isCollected() {

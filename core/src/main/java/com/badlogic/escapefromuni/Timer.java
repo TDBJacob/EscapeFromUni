@@ -25,6 +25,14 @@ public class Timer
         }
     }
 
+    public void addTime(float secs) {
+        this.secsRemaining += secs;
+    }
+
+    public void removeTime(float secs) {
+        this.secsRemaining -= secs;
+    }
+
     public float getTimeRemaining()
     {
         return this.secsRemaining;

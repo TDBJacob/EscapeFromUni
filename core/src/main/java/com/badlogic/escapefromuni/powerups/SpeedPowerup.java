@@ -1,24 +1,26 @@
 package com.badlogic.escapefromuni.powerups;
 
-import com.badlogic.escapefromuni.Player;
+import com.badlogic.escapefromuni.entities.Player;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.audio.Sound;
 
-public class speedPowerup implements Powerup {
+public class SpeedPowerup {
     private float speedMult;
     private float duration; //seconds
     private float timeActive;
     protected Texture texture;
     protected String textureName;
+
     protected Sound SoundEffect;
     protected float itemX;
     protected float itemY;
     protected Rectangle itemCollision;
     protected Boolean collected = false;
+    private boolean speedPowerUpAdded;
 
-    public speedPowerup(Texture textureName, Sound sound, float x, float y, float speedMult, float duration){
+    public SpeedPowerup(Texture textureName, Sound sound, float x, float y, float speedMult, float duration) {
         this.speedMult = speedMult;
         this.duration = duration;
         this.timeActive = 0.0f;
@@ -29,18 +31,27 @@ public class speedPowerup implements Powerup {
         this.itemCollision = new Rectangle(x, y, 1, 1);
     }
 
+    //@Override
+    public boolean isPowerUpAdded() {
+        return isSpeedPowerUpAdded();
+    }
+
+    public void setSpeedPowerUpAdded(boolean speedPowerUpAdded) {
+        this.speedPowerUpAdded = speedPowerUpAdded;
+    }
+
     //if changing speed then remember it is a multiplicative change rather then linear
-    @Override
+    //@Override
     public void apply(Player player) {
         player.increaseSpeed(speedMult);
     }
 
-    @Override
+    //@Override
     public void remove(Player player) {
         player.setSpeed(player.defaultSpeed);
     }
 
-    @Override
+    //@Override
     public boolean isTemp() {
         return true;
     }
@@ -82,5 +93,10 @@ public class speedPowerup implements Powerup {
 
     public Sound getSoundEffect() {
         return this.SoundEffect;
+    }
+
+    // Getter for speedPowerUpAdded.
+    public boolean isSpeedPowerUpAdded() {
+        return this.speedPowerUpAdded;
     }
 }

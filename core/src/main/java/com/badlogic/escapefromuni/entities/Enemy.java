@@ -111,14 +111,14 @@ public class Enemy {
     }
 
     //Reverts player position and performs enemy behaviour, on enemy collision
-    public static void enemyCollisionLogic(float oldX, float oldY) {
+    public static void enemyCollisionLogic(float oldX, float oldY, Player player) {
         for (Enemy enemy : Game.currentLevel.getLevelEnemies()) {
-            if (!(enemy.isDead()) && Game.moneyRectangle.overlaps(enemy.getCollider())) {
+            if (!(enemy.isDead()) && player.getMoneyRectangle().overlaps(enemy.getCollider())) {
                 enemy.enableShowText();
                 if (enemy.getAIType() == "Duck") {
                     enemy.enemyBehaviour1();
-                    Game.moneySprite.setPosition(oldX, oldY);
-                    Game.moneyRectangle.setPosition(oldX, oldY);
+                    player.getMoneySprite().setPosition(oldX, oldY);
+                    player.getMoneyRectangle().setPosition(oldX, oldY);
                 }
             }
         }

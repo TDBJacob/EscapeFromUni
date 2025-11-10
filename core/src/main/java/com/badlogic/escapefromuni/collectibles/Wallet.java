@@ -11,27 +11,27 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Class LibraryCard represents the library card, it has collision, texture, sprite, a list of spawns.
- * It will be instantiated in LibraryFloor1 and its spawns are therefore hard-coded.
+ * Class Wallet represents the wallet, it has collision, texture, sprite, a list of spawns.
+ * It will be instantiated in LibraryFloor2 and its spawns are therefore hard-coded.
  */
-public class LibraryCard {
+public class Wallet {
 
-    Texture texture = new Texture("pixelartkeycard.png");
+    Texture texture = new Texture("wallet.png");
     Sprite sprite = new Sprite(texture);
     List<List<Integer>> spawns = this.populateSpawns();
     Rectangle rectangle;
     List<Integer> spawn;
     boolean isDisposed;
 
-    public LibraryCard() {
+    public Wallet() {
         // logic for assigning spawn randomly and creating rectangle
         this.isDisposed = false;
         this.assignSpawn();
         this.sprite.setSize(1, 1);
-        // Creates the rectangle for the LibraryCard around its spawn with the size of the sprite.
+        // Creates the rectangle for the Wallet around its spawn with the size of the sprite.
         // spawn.get(0) being the x-coordinate and spawn.get(y) being the y-coordinate.
         this.rectangle = new Rectangle(this.spawn.get(0), this.spawn.get(1), 1, 1);
-        // Setting the location of the library card.
+        // Setting the location of the wallet.
         this.sprite.setX(this.spawn.get(0));
         this.sprite.setY(this.spawn.get(1));
     }
@@ -40,19 +40,17 @@ public class LibraryCard {
     // These are hard-coded as it will spawn on only LibraryFloor1.
     private List<List<Integer>> populateSpawns() {
         List<List<Integer>> spawns = new ArrayList<>();
-        List<Integer> spawn1 = List.of(30, 4);
-        List<Integer> spawn2 = List.of(37, 21);
-        List<Integer> spawn3 = List.of(23, 8);
-        List<Integer> spawn4 = List.of(10, 2);
+        List<Integer> spawn1 = List.of(13, 3);
+        List<Integer> spawn2 = List.of(37, 3);
+        List<Integer> spawn4 = List.of(25, 26);
         spawns.add(spawn1);
         spawns.add(spawn2);
-        spawns.add(spawn3);
         spawns.add(spawn4);
         return spawns;
     }
 
     /**
-     * This method randomly assigns the spawn for the LibraryCard.
+     * This method randomly assigns the spawn for the Wallet.
      */
     private void assignSpawn() {
         Random random = new Random();
@@ -60,37 +58,37 @@ public class LibraryCard {
         this.spawn = this.spawns.get(randomIndex);
     }
 
-    // Now need to set up the interaction between the player and the LibraryCard.
+    // Now need to set up the interaction between the player and the Wallet.
     public boolean isCollidingWithPlayer(Player player) {
         return this.rectangle.overlaps(player.getMoneyRectangle());
     }
 
     /**
-     * Updates the logic of the LibraryCard, to be invoked every frame.
+     * Updates the logic of the Wallet, to be invoked every frame.
      *
      * @param player is Player player, the player class.
      */
     public void update(Player player) {
-        // Interaction between the player and the LibraryCard checked every frame.
+        // Interaction between the player and the Wallet checked every frame.
         if (this.isCollidingWithPlayer(player)) {
             this.pickUp(player);
         }
     }
 
     /**
-     * This method is used to simulate the player picking up the LibraryCard.
-     * To be invoked when the player collides with the LibraryCard.
+     * This method is used to simulate the player picking up the Wallet.
+     * To be invoked when the player collides with the Wallet.
      *
      * @param player is Player player, the player class.
      */
     private void pickUp(Player player) {
-        player.setHasLibraryCard(true);
+        player.setHasWallet(true);
         this.isDisposed = true;
     }
 
     /**
-     * This draws the LibraryCard onto the screen.
-     * To be invoked every frame, until the LibraryCard is collected by the player.
+     * This draws the Wallet onto the screen.
+     * To be invoked every frame, until the Wallet is collected by the player.
      *
      * @param batch is the SpriteBatch.
      */

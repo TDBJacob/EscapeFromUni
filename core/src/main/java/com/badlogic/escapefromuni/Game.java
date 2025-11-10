@@ -1,9 +1,9 @@
 package com.badlogic.escapefromuni;
 
-import com.badlogic.escapefromuni.ShopStuff.Item;
+import com.badlogic.escapefromuni.entities.Player;
 import com.badlogic.escapefromuni.levels.*;
-import com.badlogic.escapefromuni.powerups.speedPowerup;
 import com.badlogic.escapefromuni.powerups.Powerup;
+import com.badlogic.escapefromuni.powerups.SpeedPowerup;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
@@ -38,13 +38,13 @@ public class Game {
     public boolean gameEnded;
     public static int Score;
     public String WinOrLose;
-    public Timer gameTimer;
+    //public Timer gameTimer;
 
     final float root2 = 1.41f;
 
     float minimapTileSize = 1.4f;
 
-    Player player = new Player(10);
+    Player player = new Player();
 
     ArrayList<Level> levels;
 
@@ -52,27 +52,29 @@ public class Game {
     OrthogonalTiledMapRenderer mapRenderer; // define map renderer
     FitViewport viewport;
     OrthographicCamera camera;
-    Texture moneyTexture;
-    public static Sprite moneySprite;
-    public static Rectangle moneyRectangle;
+    //Texture moneyTexture;
+    //public static Sprite moneySprite;
+    //public static Rectangle moneyRectangle;
     SpriteBatch spriteBatch;
 
     FitViewport uiViewport;
     OrthographicCamera uiCamera;
 
-    int positiveEventsEncountered;
-    int negativeEventsEncountered;
-    int hiddenEventsEncountered;
+    //int positiveEventsEncountered;
+    //int negativeEventsEncountered;
+    //int hiddenEventsEncountered;
 
     public static Level currentLevel;
+
+    Music bgm;
 
     float unitScale;
 
     TiledMapTileLayer collisionObjectLayer;
     MapObjects objects;
 
-    float moneyWidth;
-    float moneyHeight;
+    //float moneyWidth;
+    //float moneyHeight;
 
     public static Sound coinSound;
     public static Sprite coinSprite;
@@ -111,22 +113,20 @@ public class Game {
     BitmapFont smallFont;
     GlyphLayout layout;
 
-    TextureAtlas atlas;
-    Texture walkSheet;
-    Animation<TextureRegion> stationaryAnimation;
-    Animation<TextureRegion> upAnimation;
-    Animation<TextureRegion> downAnimation;
-    Animation<TextureRegion> rightAnimation;
+    //TextureAtlas atlas;
+    //Texture walkSheet;
+    //Animation<TextureRegion> stationaryAnimation;
+    //Animation<TextureRegion> upAnimation;
+    //Animation<TextureRegion> downAnimation;
+    //Animation<TextureRegion> rightAnimation;
 
     float stateTime;
 
-    String moveDirection;
+    //String moveDirection;
 
     public boolean shopActive;
 
     ArrayList<Sprite> minimapSprites;
-
-    Music bgm;
 
     private BitmapFont genFont(int size) {
         BitmapFont tempFont = new BitmapFont();
@@ -149,11 +149,7 @@ public class Game {
         WinOrLose = "Return"; // Should be "Return"
         gameEnded = false;
         Score = 0; // Maybe issues with old lowercase "score" which needs to be replaced
-        gameTimer = new Timer(5*60);
-
-        positiveEventsEncountered = 0;
-        negativeEventsEncountered = 0;
-        hiddenEventsEncountered = 0;
+        player.setGameTimer(new Timer(5*60));
 
         coinSound = Gdx.audio.newSound(Gdx.files.internal("coin-drop-422703.mp3"));
         coinTexture = new Texture("Custom_coin_sprite.png");
@@ -172,43 +168,43 @@ public class Game {
         bgm.setVolume(0.3f);
         bgm.play();
 
-        moveDirection = "Stationary";
+        // Set the starting value for the player's move direction.
+        //this.player.setMoveDirection("Stationary");
 
-        walkSheet = new Texture("prototype_character.png");
-        atlas = new TextureAtlas();
+        //atlas = new TextureAtlas(); -- this is done in player and can be accessed via getter.
 
-        int ssCols = 4;
-        int ssRows = 12;
+        //int ssCols = 4; -- done in player
+        //int ssRows = 12; -- done in player
 
-        TextureRegion[][] tmp = TextureRegion.split(walkSheet,
-            walkSheet.getWidth() / ssCols,
-            walkSheet.getHeight() / ssRows);
+        //TextureRegion[][] tmp = TextureRegion.split(walkSheet,
+        //walkSheet.getWidth() / ssCols,
+        //walkSheet.getHeight() / ssRows); -- all done in player
 
-        TextureRegion[] stationaryFrames = new TextureRegion[2];
-        int index = 0;
-        for (int i = 0; i < 2; i++) {
-            stationaryFrames[index++] = tmp[0][i];
-        }
-        TextureRegion[] upFrames = new TextureRegion[4];
-        index = 0;
-        for (int i = 0; i < 4; i++) {
-            upFrames[index++] = tmp[5][i];
-        }
-        TextureRegion[] downFrames = new TextureRegion[4];
-        index = 0;
-        for (int i = 0; i < 4; i++) {
-            downFrames[index++] = tmp[3][i];
-        }
-        TextureRegion[] rightFrames = new TextureRegion[4];
-        index = 0;
-        for (int i = 0; i < 4; i++) {
-            rightFrames[index++] = tmp[4][i];
-        }
+        //TextureRegion[] stationaryFrames = new TextureRegion[2];
+        //int index = 0;
+        //for (int i = 0; i < 2; i++) {
+        //stationaryFrames[index++] = tmp[0][i]; -- all done in player
+        //}
+        //TextureRegion[] upFrames = new TextureRegion[4];
+        //index = 0;
+        //for (int i = 0; i < 4; i++) {
+        //upFrames[index++] = tmp[5][i];
+        //}
+        //TextureRegion[] downFrames = new TextureRegion[4];
+        //index = 0;
+        //for (int i = 0; i < 4; i++) {
+        //downFrames[index++] = tmp[3][i]; -- all done in player
+        //}
+        //TextureRegion[] rightFrames = new TextureRegion[4];
+        //index = 0;
+        //for (int i = 0; i < 4; i++) {
+        //rightFrames[index++] = tmp[4][i]; -- all done in player
+        //}
 
-        stationaryAnimation = new Animation<TextureRegion>(0.1f, stationaryFrames);
-        upAnimation = new Animation<TextureRegion>(0.025f, upFrames);
-        downAnimation = new Animation<TextureRegion>(0.025f, downFrames);
-        rightAnimation = new Animation<TextureRegion>(0.025f, rightFrames);
+        //stationaryAnimation = new Animation<TextureRegion>(0.1f, stationaryFrames);
+        //
+        //downAnimation = new Animation<TextureRegion>(0.025f, downFrames);
+        //rightAnimation = new Animation<TextureRegion>(0.025f, rightFrames);
 
         // IMPORTANT: This is the list of levels, the player can traverse back and forth in this order.
         //            Add appropriate exits forward and/or backward in the tilemap on their individual layers.
@@ -261,13 +257,13 @@ public class Game {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 40, 30);
         mapRenderer.setView(camera);
-        moneyTexture = new Texture("vecteezy_pack-of-dollars-money-clipart-design-illustration_9391394.png");
-        moneySprite = new Sprite(moneyTexture);
+        //moneyTexture = new Texture("vecteezy_pack-of-dollars-money-clipart-design-illustration_9391394.png");
+        //moneySprite = new Sprite(moneyTexture);
         // Slightly smaller than a tile to allow for easier movement between 1 tile wide gaps
-        moneySprite.setSize(0.95f, 0.95f);
-        moneySprite.setX(40);
-        moneySprite.setY(27);
-        moneyRectangle = new Rectangle();
+        //moneySprite.setSize(0.95f, 0.95f);
+        //moneySprite.setX(40);
+        //moneySprite.setY(27);
+        //moneyRectangle = new Rectangle();
         spriteBatch = new SpriteBatch();
 
         uiCamera = new OrthographicCamera();
@@ -277,12 +273,12 @@ public class Game {
         switchToLevel(currentLevel, "Forward");
 
         // store the bucket size for brevity
-        moneyWidth = moneySprite.getWidth();
-        moneyHeight = moneySprite.getHeight();
+        //moneyWidth = moneySprite.getWidth();
+        //moneyHeight = moneySprite.getHeight();
 
-        moneyRectangle.setSize(1,1);
-        moneyRectangle.x = moneySprite.getX();
-        moneyRectangle.y = moneySprite.getY();
+        //moneyRectangle.setSize(1,1);
+        //moneyRectangle.x = moneySprite.getX();
+        //moneyRectangle.y = moneySprite.getY();
 
         stateTime = 0f;
     }
@@ -314,20 +310,20 @@ public class Game {
         map = new TmxMapLoader().load(newLevel.getMapName());
         mapRenderer.setMap(map);
         if (enterDirection == "Forward") {
-            moneySprite.setX(newLevel.getStartX());
-            moneySprite.setY(newLevel.getStartY());
+            player.getMoneySprite().setX(newLevel.getStartX());
+            player.getMoneySprite().setY(newLevel.getStartY());
             if (newLevel.getPrevLevel() != null) {
                 newLevel.getPrevLevel().getMinimapSprite().setTexture(emptyMinimapIcon);
             }
         } else if (enterDirection == "Side") {
-            moneySprite.setX(newLevel.getSideX());
-            moneySprite.setY(newLevel.getSideY());
+            player.getMoneySprite().setX(newLevel.getSideX());
+            player.getMoneySprite().setY(newLevel.getSideY());
             if (newLevel.getSideLevel() != null) {
                 newLevel.getSideLevel().getMinimapSprite().setTexture(emptyMinimapIcon);
             }
         } else if (enterDirection == "Back") {
-            moneySprite.setX(newLevel.getEndX());
-            moneySprite.setY(newLevel.getEndY());
+            player.getMoneySprite().setX(newLevel.getEndX());
+            player.getMoneySprite().setY(newLevel.getEndY());
             if (newLevel.getNextLevel() != null) {
                 newLevel.getNextLevel().getMinimapSprite().setTexture(emptyMinimapIcon);
             }
@@ -383,8 +379,8 @@ public class Game {
 
         // mapCollisions will be used to collide, update when switching map.
         mapCollisions = createCollisionRects(mapCollisionLayer);
-    // Notify the level that it has been entered so it can access map collision data
-    newLevel.onEnter(mapCollisionLayer, mapCollisions);
+        // Notify the level that it has been entered so it can access map collision data
+        newLevel.onEnter(mapCollisionLayer, mapCollisions);
     }
 
     // Constructs an ArrayList of all collision rectangles for the layer provided
@@ -430,8 +426,8 @@ public class Game {
         float velX = 0f;
         float velY = 0f;
 
-        float moneyOldX = moneySprite.getX();
-        float moneyOldY = moneySprite.getY();
+        player.setOldMoneyX(player.getMoneySprite().getX());
+        player.setOldMoneyY(player.getMoneySprite().getY());
 
         //experiment of power up
         //a key press (E) will be used to give the power up instead of a gui button for now
@@ -441,33 +437,33 @@ public class Game {
         //    player.addPowerUp(drinkPowerUp);
         //}
 
-        String oldMoveDir = moveDirection;
+        String oldMoveDir = player.getMoveDirection();
         boolean isMoving = false;
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
             velX = player.getSpeed() * delta; // Convert to speed/s for consistent gameplay on different FPS
-            moveDirection = "Right";
+            player.setMoveDirection("Right");
             isMoving = true;
         }
         else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
             velX = -player.getSpeed() * delta;
-            moveDirection = "Left";
+            player.setMoveDirection("Left");
             isMoving = true;
         }
         // Use if here rather than else if, so movement can happen on both axis at once
         if (Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) {
             velY = player.getSpeed() * delta;
-            moveDirection = "Up";
+            player.setMoveDirection("Up");
             isMoving = true;
         }
         else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) {
             velY = -player.getSpeed() * delta;
-            moveDirection = "Down";
+            player.setMoveDirection("Down");
             isMoving = true;
         }
         if (!isMoving) {
-            moveDirection = "Stationary";
+            player.setMoveDirection("Stationary");
         }
-        if (moveDirection != oldMoveDir) {
+        if (player.getMoveDirection() != oldMoveDir) {
             stateTime = 0f;
         }
 
@@ -486,27 +482,29 @@ public class Game {
         // NOTE: kind of flawed but won't be noticeable unless very high speed or very low fps,
         // as it doesn't make you flush against a wall if you move into it
 
-        tRect.set(moneySprite.getX()+velX, moneySprite.getY(), moneyWidth, moneyHeight);
+        tRect.set(player.getMoneySprite().getX()+velX, player.getMoneySprite().getY(), player.getMoneyWidth(),
+            player.getMoneyHeight());
         if (!wallCollisionCheck(tRect)) {
-            moneySprite.translateX(velX);
+            player.getMoneySprite().translateX(velX);
         }
 
-        tRect.set(moneySprite.getX(), moneySprite.getY()+velY, moneyWidth, moneyHeight);
+        tRect.set(player.getMoneySprite().getX(), player.getMoneySprite().getY()+velY, player.getMoneyWidth(),
+            player.getMoneyHeight());
         if (!wallCollisionCheck(tRect)) {
-            moneySprite.translateY(velY);
+            player.getMoneySprite().translateY(velY);
         }
 
         // Update the player's collision rectangle for the trigger collision check
-        moneyRectangle.x = moneySprite.getX();
-        moneyRectangle.y = moneySprite.getY();
+        player.getMoneyRectangle().x = player.getMoneySprite().getX();
+        player.getMoneyRectangle().y = player.getMoneySprite().getY();
 
         // Check for collisions with non-walls and respond appropriately
-        triggerCollisionCheck(moneyRectangle);
+        triggerCollisionCheck(player.getMoneyRectangle());
 
-        Enemy.enemyCollisionLogic(moneyOldX, moneyOldY);
+        Enemy.enemyCollisionLogic(player.getOldMoneyX(), player.getOldMoneyY(), this.player);
 
         for (Collectible coin : currentLevel.getLevelCoins()) {
-            if (!(coin.isCollected()) && moneyRectangle.overlaps(coin.getCollider())) {
+            if (!(coin.isCollected()) && player.getMoneyRectangle().overlaps(coin.getCollider())) {
                 coin.collect();
                 money += 10;
                 Score += 10;
@@ -514,8 +512,8 @@ public class Game {
             }
         }
 
-        for (Powerup powerup : currentLevel.getLevelPowerups()) {
-            if (!(powerup.isCollected()) && moneyRectangle.overlaps(powerup.getCollider())) {
+        for (SpeedPowerup powerup : currentLevel.getLevelPowerups()) {
+            if (!(powerup.isCollected()) && player.getMoneyRectangle().overlaps(powerup.getCollider())) {
                 powerup.collect();
                 powerup.apply(player);
                 powerup.getSoundEffect().play();
@@ -606,9 +604,9 @@ public class Game {
     }
 
     public void logic() {
-        gameTimer.tick(); // So that the timer counts down
+        player.getGameTimer().tick(); // So that the timer counts down
 
-        if (gameTimer.hasCompleted()) {
+        if (player.getGameTimer().hasCompleted()) {
             WinOrLose = "Lose";
             gameEnded = true;
             return;
@@ -619,28 +617,31 @@ public class Game {
         float worldHeight = viewport.getWorldHeight();
 
         // clamp x to values 0 and worldWidth -- subtract the bucketWidth
-        moneySprite.setX(MathUtils.clamp(moneySprite.getX(), 0, worldWidth - moneyWidth));
+        player.getMoneySprite().setX(MathUtils.clamp(player.getMoneySprite().getX(), 0,
+            worldWidth - player.getMoneyWidth()));
         // clamp y vals
-        moneySprite.setY(MathUtils.clamp(moneySprite.getY(), 0, worldHeight - moneyHeight));
+        player.getMoneySprite().setY(MathUtils.clamp(player.getMoneySprite().getY(), 0,
+            worldHeight - player.getMoneyHeight()));
 
         // Player rectangle constructed for collision logic in levels.
-        Rectangle playerRectangle = new Rectangle(moneySprite.getX(), moneySprite.getY(), 1, 1);
+        //Rectangle playerRectangle = new Rectangle(moneySprite.getX(), moneySprite.getY(), 1, 1);
 
         float delta = Gdx.graphics.getDeltaTime();
         // Updates the level entities.
-        this.currentLevel.update(delta);
+        currentLevel.update(delta, this.player);
         // Collision logic for active level.
-        Rectangle playerRect = new Rectangle(moneySprite.getX(), moneySprite.getY(), 1, 1);
-        boolean collided = this.currentLevel.collides(playerRect);
+
+        //Rectangle playerRect = new Rectangle(moneySprite.getX(), moneySprite.getY(), 1, 1);
+        boolean collided = currentLevel.collides(player);
         if (collided) {
-            // If we're on the BusLevel and the player has reached the bus, switch back to the previous level
-            if (this.currentLevel instanceof R07_BusLevel) {
-                if (this.currentLevel.getPrevLevel() != null) {
+            // If we're on the BusLevel and the player has reached the bus, game terminates.
+            if (currentLevel instanceof R07_BusLevel) {
+                if (currentLevel.getPrevLevel() != null) {
                     Gdx.app.exit();
                 }
             } else {
                 // Generic collision handling for other levels
-                System.out.println("Player collided with entity.");
+                this.player.getGameTimer().removeTime(2F);
             }
         }
         // apply the bucket position and size to the bucket rectangle
@@ -658,24 +659,24 @@ public class Game {
         spriteBatch.begin();
 
         // Draws the level entities.
-        this.currentLevel.draw(spriteBatch);
+        currentLevel.draw(spriteBatch);
 
         TextureRegion currentFrame;
 
-        if (moveDirection == "Stationary") {
-            currentFrame = stationaryAnimation.getKeyFrame(stateTime, true);
-        } else if (moveDirection == "Down") {
-            currentFrame = downAnimation.getKeyFrame(stateTime, true);
-        } else if (moveDirection == "Up") {
-            currentFrame = upAnimation.getKeyFrame(stateTime, true);
+        if (player.getMoveDirection() == "Stationary") {
+            currentFrame = player.getStationaryAnimation().getKeyFrame(stateTime, true);
+        } else if (player.getMoveDirection() == "Down") {
+            currentFrame = player.getDownAnimation().getKeyFrame(stateTime, true);
+        } else if (player.getMoveDirection() == "Up") {
+            currentFrame = player.getUpAnimation().getKeyFrame(stateTime, true);
         } else {
-            currentFrame = rightAnimation.getKeyFrame(stateTime, true);
+            currentFrame = player.getRightAnimation().getKeyFrame(stateTime, true);
         }
 
-        if (moveDirection == "Left") {
-            spriteBatch.draw(currentFrame, moneySprite.getX() + moneyWidth / 2 + 1.3f, moneySprite.getY() - moneyHeight / 2 - 0.25f, -2.5f, 2.5f);
+        if (player.getMoveDirection() == "Left") {
+            spriteBatch.draw(currentFrame, player.getMoneySprite().getX() + player.getMoneyWidth() / 2 + 1.3f, player.getMoneySprite().getY() - player.getMoneyHeight() / 2 - 0.25f, -2.5f, 2.5f);
         } else {
-            spriteBatch.draw(currentFrame, moneySprite.getX() - moneyWidth / 2 - 0.3f, moneySprite.getY() - moneyHeight / 2 - 0.25f, 2.5f, 2.5f);
+            spriteBatch.draw(currentFrame, player.getMoneySprite().getX() - player.getMoneyWidth() / 2 - 0.3f, player.getMoneySprite().getY() - player.getMoneyHeight() / 2 - 0.25f, 2.5f, 2.5f);
         }
         //moneySprite.draw(spriteBatch); // Draw the character
 
@@ -685,11 +686,26 @@ public class Game {
             if (!(coin.isCollected())) {
                 coin.render(spriteBatch);
             }
+            else if (coin.isCollected() && coin.getCollectibleAdded()) {
+                continue;
+            }
+            else if (coin.isCollected()) {
+                this.player.addCoins(1);
+                coin.setCollectibleAdded(true);
+            }
         }
 
-        for (Powerup planet : currentLevel.getLevelPowerups()) {
+        // OK this is impossible.
+        for (SpeedPowerup planet : currentLevel.getLevelPowerups()) {
             if (!(planet.isCollected())) {
                 planet.render(spriteBatch);
+            }
+            else if (planet.isCollected() && planet.isSpeedPowerUpAdded()) {
+                continue;
+            }
+            else if (planet.isCollected()) {
+                this.player.setPositiveEventsEncountered(this.player.getPositiveEventsEncountered() + 1);
+                planet.setSpeedPowerUpAdded(true);
             }
         }
 
@@ -716,11 +732,11 @@ public class Game {
         spriteBatch.begin();
 
         // Format the time as mm:ss from the second remaining
-        String tempSecs = ""+(gameTimer.getSecsRemaining()%60);
+        String tempSecs = ""+(player.getGameTimer().getSecsRemaining()%60);
         if (tempSecs.length() == 1) {
             tempSecs = "0"+tempSecs;
         }
-        String tempMins = "0"+(gameTimer.getSecsRemaining()/60);
+        String tempMins = "0"+(player.getGameTimer().getSecsRemaining()/60);
 
         // Draw the formatted timer at the top center of the screen
         layout.setText(font, tempMins+":"+tempSecs);
@@ -733,9 +749,9 @@ public class Game {
         smallFont.draw(spriteBatch, layout, tempx, 820);
 
         // Draw all the event counters
-        smallFont.draw(spriteBatch, "Positive Events: "+positiveEventsEncountered, 20, 950);
-        smallFont.draw(spriteBatch, "Negative Events: "+negativeEventsEncountered, 20, 900);
-        smallFont.draw(spriteBatch, "Hidden Events: "+hiddenEventsEncountered, 20, 850);
+        smallFont.draw(spriteBatch, "Positive Events: " + player.getPositiveEventsEncountered(), 20, 950);
+        smallFont.draw(spriteBatch, "Negative Events: " + player.getNegativeEventsEncountered(), 20, 900);
+        smallFont.draw(spriteBatch, "Hidden Events: " + player.getHiddenEventsEncountered(), 20, 850);
 
         spriteBatch.end();
     }

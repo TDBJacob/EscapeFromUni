@@ -1,6 +1,7 @@
 package com.badlogic.escapefromuni.levels;
 
-import com.badlogic.escapefromuni.powerups.speedPowerup;
+import com.badlogic.escapefromuni.entities.Player;
+import com.badlogic.escapefromuni.powerups.SpeedPowerup;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.escapefromuni.Game;
@@ -21,11 +22,11 @@ public class R01_LibraryFloor3 extends Level{
         mapName = "maps/libraryfloor3.tmx";
 
         levelCoins = new ArrayList<>();
-        levelPowerups = new ArrayList<>();
+        levelSpeedPowerups = new ArrayList<>();
         levelEnemies = new ArrayList<>();
 
         levelCoins = Level.generateLevelCoins(14, 20, 14, 8); // Needs even int pairs
-        levelPowerups.add(new speedPowerup(Game.planetTexture, Game.planetSound, 25, 15, 1.5f, 300.0f));
+        levelSpeedPowerups.add(new SpeedPowerup(Game.planetTexture, Game.planetSound, 25, 15, 1.5f, 300.0f));
         //levelEnemies.add(new Enemy(Game.duckTexture, Game.duckSound, 14, 12, "Duck"));
 
         // Tile that the player spawns at when first entering the level.
@@ -38,9 +39,9 @@ public class R01_LibraryFloor3 extends Level{
     }
 
     // These are redundant as there are no entities on floor 3.
-    public void update(float deltaTime) {}
+    public void update(float deltaTime, Player player) {}
     public void draw(SpriteBatch batch) {}
-    public boolean collides(Rectangle playerRectangle) {
+    public boolean collides(Player player) {
         return false;
     }
 }

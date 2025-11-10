@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.badlogic.escapefromuni.BusStop.Coin;
 import com.badlogic.escapefromuni.BusStop.GameTimer;
+import com.badlogic.escapefromuni.entities.Player;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -12,7 +13,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.escapefromuni.powerups.speedPowerup;
+import com.badlogic.escapefromuni.powerups.SpeedPowerup;
 import com.badlogic.escapefromuni.Game;
 import com.badlogic.escapefromuni.entities.Enemy;
 import com.badlogic.escapefromuni.Game;
@@ -55,7 +56,7 @@ public class R07_BusLevel extends Level {
      */
     public R07_BusLevel() {
         levelCoins = new ArrayList<>();
-        levelPowerups = new ArrayList<>();
+        levelSpeedPowerups = new ArrayList<>();
         levelEnemies = new ArrayList<>();
 
         // Name of the level
@@ -91,7 +92,7 @@ public class R07_BusLevel extends Level {
         busVisState = BusVisState.HIDDEN;
         busVisTimer = 0f;
 
-        levelPowerups.add(new speedPowerup(Game.planetTexture, Game.planetSound, 36, 16, 1.25f, 300.0f));
+        levelSpeedPowerups.add(new SpeedPowerup(Game.planetTexture, Game.planetSound, 36, 16, 1.25f, 300.0f));
     }
     /**
      * Populate coins using the available walkable tiles. If availableTiles is empty,
@@ -130,10 +131,9 @@ public class R07_BusLevel extends Level {
     }
 
     @Override
-    public void update(float deltaTime) {
+    public void update(float deltaTime, Player player) {
         // Update game timer
         gameTimer.update(deltaTime);
-
         // Update bus visibility schedule
         busVisTimer += deltaTime;
         if (busVisState == BusVisState.HIDDEN) {
@@ -176,13 +176,14 @@ public class R07_BusLevel extends Level {
     }
 
     @Override
-    public boolean collides(Rectangle playerRectangle) {
+    public boolean collides(Player player) {
         // First, check coin collection using the actual player rectangle
         for (Coin coin : coins) {
-            if (!coin.isCollected() && playerRectangle.overlaps(coin.getCollisionBox())) {
+            if (!coin.isCollected() && player.getMoneyRectangle().overlaps(coin.getCollisionBox())) {
                 coin.collect();
                 Game.coinSound.play();
                 coinsCollected++;
+                player.addCoins(1);
                 if (coinsCollected >= TOTAL_COINS) {
                     busUnlocked = true;
                     busSprite.setColor(0.5f, 1f, 0.5f, 1f);
@@ -194,7 +195,7 @@ public class R07_BusLevel extends Level {
         if (busUnlocked && busVisState == BusVisState.VISIBLE) {
             Rectangle busRect = new Rectangle(busSprite.getX(), busSprite.getY(),
                     busSprite.getWidth(), busSprite.getHeight());
-            if (busRect.overlaps(playerRectangle)) {
+            if (busRect.overlaps(player.getMoneyRectangle())) {
                 // Player has reached the bus - level complete!
                 return true;
             }

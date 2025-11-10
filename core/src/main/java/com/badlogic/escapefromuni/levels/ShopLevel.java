@@ -1,8 +1,9 @@
 package com.badlogic.escapefromuni.levels;
 
+import com.badlogic.escapefromuni.entities.Player;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.escapefromuni.powerups.speedPowerup;
+import com.badlogic.escapefromuni.powerups.SpeedPowerup;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.escapefromuni.Game;
@@ -16,7 +17,7 @@ public class ShopLevel extends Level{
         mapName = "ShopLevel.tmx";
 
         levelCoins = new ArrayList<>();
-        levelPowerups = new ArrayList<>();
+        levelSpeedPowerups = new ArrayList<>();
         levelEnemies = new ArrayList<>();
 
         startX = 28;
@@ -33,7 +34,7 @@ public class ShopLevel extends Level{
     // These are redundant as there are no entities on shopLevel
 
     @Override
-    public void update(float deltaTime) {
+    public void update(float deltaTime, Player player) {
 
     }
 
@@ -43,7 +44,7 @@ public class ShopLevel extends Level{
     }
 
     @Override
-    public boolean collides(Rectangle rectangle) {
+    public boolean collides(Player player) {
         return false;
     }
 }

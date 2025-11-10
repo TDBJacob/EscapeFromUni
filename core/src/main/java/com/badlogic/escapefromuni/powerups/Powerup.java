@@ -1,6 +1,6 @@
 package com.badlogic.escapefromuni.powerups;
 
-import com.badlogic.escapefromuni.Player;
+import com.badlogic.escapefromuni.entities.Player;
 import com.badlogic.escapefromuni.collectibles.Collectible;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -10,6 +10,11 @@ import java.util.ArrayList;
 import com.badlogic.gdx.audio.Sound;
 
 public interface Powerup {
+
+
+    public boolean isPowerUpAdded();
+
+    public void setPowerUpAdded(boolean powerUpAdded);
 
     public void apply(Player player); //called when used
 

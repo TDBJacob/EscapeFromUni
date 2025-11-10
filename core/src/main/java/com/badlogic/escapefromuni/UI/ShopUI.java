@@ -1,6 +1,6 @@
 package com.badlogic.escapefromuni.UI;
 
-import com.badlogic.escapefromuni.Player;
+import com.badlogic.escapefromuni.entities.Player;
 import com.badlogic.escapefromuni.ShopStuff.Item;
 import com.badlogic.escapefromuni.ShopStuff.Shop;
 import com.badlogic.gdx.Gdx;
