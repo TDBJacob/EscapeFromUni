@@ -6,6 +6,7 @@ import com.badlogic.escapefromuni.powerups.speedPowerup;
 import com.badlogic.escapefromuni.powerups.Powerup;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -125,6 +126,8 @@ public class Game {
 
     ArrayList<Sprite> minimapSprites;
 
+    Music bgm;
+
     private BitmapFont genFont(int size) {
         BitmapFont tempFont = new BitmapFont();
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Roboto-Regular.ttf"));
@@ -164,6 +167,10 @@ public class Game {
         duckSound2 = Gdx.audio.newSound(Gdx.files.internal("short-beep-351721.mp3"));
         duckTexture = new Texture("custom_duck.png");
         duckSpeechBubbleTexture = new Texture("Custom_speech_bubble_v2.png");
+
+        bgm = Gdx.audio.newMusic(Gdx.files.internal("EscapeAdventure.ogg"));
+        bgm.setVolume(0.3f);
+        bgm.play();
 
         moveDirection = "Stationary";
 
